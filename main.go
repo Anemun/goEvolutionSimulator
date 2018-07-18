@@ -9,7 +9,7 @@ import (
 
 var botWorld world
 
-// 1. Init world
+// 1. Init world asd
 // 2. Place initial population
 // 3. Loop to the end
 
