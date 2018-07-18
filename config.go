@@ -28,5 +28,5 @@ var maxTickLimit = 500
 var serializeGZ = true
 
 //debug
-var debug_fillEntireWorld = false
-var debug_checkCollisions = false
+var debugfillEntireWorld = false
+var debugcheckCollisions = false

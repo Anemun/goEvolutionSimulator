@@ -27,7 +27,7 @@ func main() {
 	WriteLog("\n---Botworld START---", 1)
 
 	botWorld.Init()
-	if debug_fillEntireWorld == true {
+	if debugfillEntireWorld == true {
 		fillEntireWorldWithBots()
 	} else {
 		placeInitialBots((worldSizeX + worldSizeY) / 5)
@@ -46,7 +46,7 @@ func main() {
 		}
 
 		botWorld.Tick()
-		if debug_checkCollisions == true {
+		if debugcheckCollisions == true {
 			collisionDetection()
 		}
 		i++
