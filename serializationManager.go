@@ -7,7 +7,6 @@ import (
 	"log"
 	"os"
 	"time"
-
 	"github.com/vmihailenco/msgpack"
 )
 

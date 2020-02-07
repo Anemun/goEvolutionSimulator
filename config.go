@@ -1,8 +1,8 @@
 package main
 
 // world config
-var worldSizeX = 200
-var worldSizeY = 250
+var worldSizeX = 400
+var worldSizeY = 500
 var directionsCount byte = 8
 
 // bot config
@@ -16,17 +16,18 @@ var mutateChance = 0.25
 var maxRelativesDifference = 1
 
 // serialize config
-var serializeTickCap = 100
+var serializeTickCap = 1000
 
-//var filePath = "data/"
-var filePath = "E:/test/"
+var filePath = "data/" // linux
+
+//var filePath = "E:/test/"		// windows
 var fileNameBase = "chunk_"
 
 // other
-var logLevel byte = 1
-var maxTickLimit = 500
-var serializeGZ = true
+var logLevel byte = 2
+var maxTickLimit = 2000
+var serializeGZ = false
 
 //debug
-var debugfillEntireWorld = false
+var debugfillEntireWorld = true
 var debugcheckCollisions = false
