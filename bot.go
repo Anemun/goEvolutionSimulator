@@ -4,14 +4,14 @@ import (
 	"math/rand"
 )
 
-// Bot variables
+// Bot class
 type Bot struct {
 	index              uint64
 	coordX             int
 	coordY             int
 	energy             int
 	genome             []byte
-	organs             []*organ
+	organs             []*Organ
 	commandPointer     int
 	isDead             bool
 	doNextMinorCommand bool
@@ -19,16 +19,14 @@ type Bot struct {
 	majorCommandLeft   int
 }
 
-type organ struct {
-	parent *Bot
-	coordX int
-	coordY int
-	genome []int
-}
-
 // SetCommandPointer SET
 func (bot *Bot) SetCommandPointer(newPointer int) {
 	bot.commandPointer = LoopValue(newPointer, 0, botGenomeSize)
+}
+
+// SetCommandPointer SET
+func (organ *Organ) SetCommandPointer(newPointer int) {
+	organ.commandPointer = LoopValue(newPointer, 0, organGenomeSize)
 }
 
 // IncrementCommandPointer ++
@@ -41,20 +39,29 @@ func (bot *Bot) CommandPointer() int {
 	return bot.commandPointer
 }
 
-// SetEnergy SET
-func (bot *Bot) SetEnergy(increment int) {
+// CalculateMaxEnergy - return maximum bot energy based on organs count
+func (bot *Bot) CalculateMaxEnergy() int {
+	return maxBaseBotEnergy + (len(bot.organs) * maxBaseBotEnergyPerOrgan)
+}
+
+// AddEnergy SET
+func (bot *Bot) AddEnergy(increment int) {
 	bot.energy += increment
-	if bot.energy > maxBotEnergy {
+	botMaxEnergy := bot.CalculateMaxEnergy()
+	if bot.energy > botMaxEnergy {
 		if makeChildIfEnergySurplus == true {
 			bot.commandCHILD()
 		} else {
-			bot.energy = maxBotEnergy
+			bot.energy = botMaxEnergy
 		}
+	}
+	if bot.energy < 0 {
+		bot.energy = 0
 	}
 }
 
-// NewBot creates new bot
-func (bot *Bot) NewBot(index uint64, parent *Bot) {
+// InitBot initializes new bot
+func (bot *Bot) InitBot(index uint64, parent *Bot) {
 	bot.SetCommandPointer(0)
 	bot.isDead = false
 	bot.index = index
@@ -67,7 +74,8 @@ func (bot *Bot) NewBot(index uint64, parent *Bot) {
 	}
 
 	if parent != nil {
-		bot.energy = parent.energy / 2
+		bot.energy = 0
+		bot.AddEnergy(int(float64(parent.energy) * childEnergyFraction))
 		bot.genome = parent.genome
 		var mutate = rand.Float64()
 		if mutate <= mutateChance {
@@ -85,16 +93,16 @@ func (bot *Bot) doCommand() {
 		bot.commandSTAY()
 	case 5:
 		bot.commandLOOKa()
-	case 10:
-		bot.commandMOVEa()
-	case 15:
-		bot.commandEAT()
+	// case 10:
+	// 	bot.commandMOVEa()
+	// case 15:
+	// 	bot.commandEAT()
 	case 20:
 		bot.commandPHOTOSYNTESIS()
 	case 25:
 		bot.commandORGAN()
-	case 30:
-		bot.commandCHILD()
+	// case 30:
+	// 	bot.commandCHILD()
 	default:
 		bot.forwardPointer()
 	}
@@ -106,10 +114,10 @@ func (bot *Bot) Tick() {
 		return
 	}
 
-	bot.energy--
+	bot.AddEnergy(-1 * (botEnergyTickCost + len(bot.organs)*botEnergyTickCostPerOrgan))
 	bot.minorCommandCount = 0
 	bot.doNextMinorCommand = true
-	bot.majorCommandLeft = 1
+	bot.majorCommandLeft = maxMajorCommandsPerTurn
 
 	for i := range bot.organs {
 		bot.organs[i].tick()
@@ -133,10 +141,6 @@ func (bot *Bot) Tick() {
 	if bot.energy <= 0 {
 		botWorld.BotIsDead(bot)
 	}
-}
-
-func (organ *organ) tick() {
-
 }
 
 // Take value from next genome byte and make a direction out of it (default direction count is 8 so value from 0 to 7, where 0 is up, 1 is up-right and 7 is up-left)

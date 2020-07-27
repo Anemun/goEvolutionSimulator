@@ -23,14 +23,14 @@ func main() {
 	//defer profile.Start(profile.CPUProfile, profile.ProfilePath(".")).Stop()
 
 	rand.Seed(time.Now().UTC().UnixNano()) // this initialize brand new randomizer for current run
-	CreateFolders()
+	createFolders()
 	WriteLog("\n---Botworld START---", 1)
 
 	botWorld.Init()
 	if debugfillEntireWorld == true {
 		fillEntireWorldWithBots()
 	} else {
-		placeInitialBots((worldSizeX + worldSizeY) / 5)
+		placeInitialBots(initialBotCount)
 	}
 
 	globalTimerStart := time.Now()
@@ -69,18 +69,19 @@ func placeInitialBots(count int) {
 		if botWorld.WhatIsOnCoord(newBotCoord, nil) == "empty" {
 			i++
 			botWorld.NewBot(newBotCoord, nil)
-			// WriteLog(fmt.Sprint("Placing starting bot at ", coord), 4)
+			WriteLog(fmt.Sprint("Placing starting bot at ", newBotCoord), 4)
 		}
 	}
 }
 
+// TEST CODE
 func fillEntireWorldWithBots() {
 	i, j := 0, 0
 	for i < worldSizeX {
 		for j < worldSizeY {
 			var newBotCoord = coordinates{i, j}
 			botWorld.NewBot(newBotCoord, nil)
-			// WriteLog(fmt.Sprint("Placing starting bot at ", coord), 4)
+			WriteLog(fmt.Sprint("Placing starting bot at ", newBotCoord), 4)
 			j++
 		}
 		j = 0
@@ -88,6 +89,7 @@ func fillEntireWorldWithBots() {
 	}
 }
 
+// TEST CODE
 func placeTestBots() {
 	botWorld.NewBot(coordinates{3, 3}, nil)
 	botWorld.bots[3][3].genome[0] = 10
@@ -104,8 +106,18 @@ func collisionDetection() {
 	var i, j int = 0, 0
 	for i < worldSizeX {
 		for j < worldSizeY {
-			if botWorld.bots[i][j] != nil && botWorld.food[i][j] != nil {
-				panic("There is two object on same tile!")
+			if botWorld.bots[i][j] != nil {
+				if botWorld.food[i][j] != nil {
+					panic("There is two object on same tile!")
+				}
+				if botWorld.organs[i][j] != nil {
+					panic("There is two object on same tile!")
+				}
+			}
+			if botWorld.food[i][j] != nil {
+				if botWorld.organs[i][j] != nil {
+					panic("There is two object on same tile!")
+				}
 			}
 			j++
 		}

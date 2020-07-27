@@ -1,5 +1,5 @@
 package main
 
-type Food struct {
+type food struct {
 	coord coordinates
 }

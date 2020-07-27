@@ -22,6 +22,8 @@ func (bot *Bot) commandLOOKa() {
 		bot.IncrementCommandPointer(3)
 	case "food":
 		bot.IncrementCommandPointer(4)
+	case "self":
+		bot.IncrementCommandPointer(5)
 	default:
 		panic("There must be one of the values above!")
 	}
@@ -56,15 +58,38 @@ func (bot *Bot) commandEAT() {
 
 // command 20
 func (bot *Bot) commandPHOTOSYNTESIS() {
-	bot.SetEnergy(photosyntesisEnergyGain)
+	bot.AddEnergy(photosyntesisEnergyGain)
 	// WriteLog(fmt.Sprint("Bot ", bot.index, " gain ", photosyntesisEnergyGain, " energy from photosyntesis", " (command [20]commandPHOTOSYNTESIS)"), 4)
 	bot.IncrementCommandPointer(1)
+
+	bot.doNextMinorCommand = false
 }
 
 // command 25
 func (bot *Bot) commandORGAN() {
-	// WriteLog(fmt.Sprint("Bot ", bot.index, " NOT IMPLEMENTED", " (command [25]commandORGAN)"), 4)
-	bot.forwardPointer()
+	direction := 0
+	for direction < int(directionsCount) {
+		organCoord := bot.getAdjascentCoordByDirection(direction)
+		if botWorld.WhatIsOnCoord(organCoord, nil) != "empty" {
+			direction++
+		} else {
+			newGenome := make([]byte, organGenomeSize)
+			// Взять следующие organGenomeSize значений из генома бота и записать их в орган
+			i := 0
+			for i < organGenomeSize {
+				cp := LoopValue(bot.CommandPointer()+1+i, 0, botGenomeSize)
+				newGenome[i] = bot.genome[cp]
+				i++
+			}
+			botWorld.NewOrgan(organCoord, bot, newGenome)
+			bot.IncrementCommandPointer(1)
+			break
+		}
+	}
+	bot.IncrementCommandPointer(organGenomeSize + 1)
+
+	bot.doNextMinorCommand = false
+	// WriteLog(fmt.Sprint("Bot ", bot.index, " create organ at ", organCoord, " (command [25]commandORGAN)"), 4)
 }
 
 // command 30
@@ -76,14 +101,16 @@ func (bot *Bot) commandCHILD() {
 			direction++
 		} else {
 			botWorld.NewBot(childCoord, bot)
-			bot.energy = bot.energy / 2
+			bot.energy = int(float64(bot.energy) * childEnergyFraction)
 			// WriteLog(fmt.Sprint("Bot ", bot.index, " create child at ", childCoord, " (command [30]commandCHILD)"), 4)
-			bot.IncrementCommandPointer(2)
-			return
+			bot.IncrementCommandPointer(1)
+			break
 		}
 	}
 	// WriteLog(fmt.Sprint("Bot ", bot.index, " tried to create child but there is no room around", " (command [30]commandCHILD)"), 4)
 	bot.IncrementCommandPointer(1)
+
+	bot.doNextMinorCommand = false
 }
 
 func (bot *Bot) forwardPointer() {

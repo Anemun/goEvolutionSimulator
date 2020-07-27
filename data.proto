@@ -1,0 +1,20 @@
+syntax = "proto3";
+option go_package = ".;main";
+
+message ChunkMessage {
+	uint32 chunkIndex = 1;
+	repeated TickMessage ticks = 2;
+}
+
+message TickMessage {
+	uint64 tickIndex = 1;
+	repeated BotMessage bots = 2;
+}
+
+message BotMessage {
+	uint64 index = 1;
+	uint32 coordX = 2;
+	uint32 coordY = 3;
+	uint32 energy = 4;
+	bytes genome = 5; 
+}

@@ -31,8 +31,8 @@ func TestCompareGenome(t *testing.T) {
 	var testWorld world
 
 	testWorld.Init()
-	bot1.NewBot(0, nil)
-	bot2.NewBot(1, nil)
+	bot1.InitBot(0, nil)
+	bot2.InitBot(1, nil)
 
 	for i := range bot1.genome {
 		bot1.genome[i] = 1

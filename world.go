@@ -2,8 +2,9 @@ package main
 
 // Define world variable types
 type world struct {
-	bots [][]*Bot
-	food [][]*Food
+	bots   [][]*Bot
+	organs [][]*Organ
+	food   [][]*food
 }
 
 type coordinates struct {
@@ -22,9 +23,14 @@ func (world *world) Init() {
 		world.bots[i] = make([]*Bot, worldSizeY)
 	}
 
-	world.food = make([][]*Food, worldSizeX)
+	world.food = make([][]*food, worldSizeX)
 	for i := 0; i < worldSizeX; i++ {
-		world.food[i] = make([]*Food, worldSizeY)
+		world.food[i] = make([]*food, worldSizeY)
+	}
+
+	world.organs = make([][]*Organ, worldSizeX)
+	for i := 0; i < worldSizeX; i++ {
+		world.organs[i] = make([]*Organ, worldSizeY)
 	}
 
 	nextBotIndex = 0
@@ -47,7 +53,7 @@ func (world *world) Tick() {
 		botList[i].Tick()
 	}
 
-	SerializeTick(thisTickIndex, world.bots)
+	serializeTick(thisTickIndex, world.bots)
 	thisTickIndex++
 
 }
@@ -63,8 +69,8 @@ func (world *world) WhatIsOnCoord(coord coordinates, whoIsAsking *Bot) string {
 	coord = world.loopCoords(coord)
 	if world.bots[coord.x][coord.y] != nil {
 		if whoIsAsking != nil {
-			var whoIsAskingCoord = world.loopCoords(coordinates{whoIsAsking.coordX, whoIsAsking.coordY})
-			if world.compareGenome(world.bots[coord.x][coord.y], world.bots[whoIsAskingCoord.x][whoIsAskingCoord.y]) == true {
+			// var whoIsAskingCoord = world.loopCoords(coordinates{whoIsAsking.coordX, whoIsAsking.coordY})
+			if world.compareGenome(world.bots[coord.x][coord.y], world.bots[whoIsAsking.coordX][whoIsAsking.coordY]) == true {
 				return "relative"
 			}
 		}
@@ -72,6 +78,18 @@ func (world *world) WhatIsOnCoord(coord coordinates, whoIsAsking *Bot) string {
 	}
 	if world.food[coord.x][coord.y] != nil {
 		return "food"
+	}
+	if world.organs[coord.x][coord.y] != nil {
+		if whoIsAsking != nil {
+			if world.organs[coord.x][coord.y].parent == whoIsAsking {
+				return "self"
+			}
+			// var whoIsAskingCoord = world.loopCoords(coordinates{whoIsAsking.coordX, whoIsAsking.coordY})
+			if world.compareGenome(world.organs[coord.x][coord.y].parent, world.bots[whoIsAsking.coordX][whoIsAsking.coordY]) == true {
+				return "relative"
+			}
+		}
+		return "bot"
 	}
 
 	return "empty"
@@ -106,11 +124,26 @@ func (world *world) setBotOnCoord(coord coordinates, bot *Bot) {
 	world.bots[bot.coordX][bot.coordY] = bot
 }
 
+func (world *world) setOrganOnCoord(coord coordinates, organ *Organ) {
+	world.organs[organ.coordX][organ.coordY] = nil
+	coord = world.loopCoords(coord)
+	organ.coordX = coord.x
+	organ.coordY = coord.y
+	world.organs[organ.coordX][organ.coordY] = organ
+}
+
 func (world *world) NewBot(coord coordinates, parent *Bot) {
 	var newBot Bot
-	newBot.NewBot(nextBotIndex, parent)
+	newBot.InitBot(nextBotIndex, parent)
 	nextBotIndex++
 	world.setBotOnCoord(coord, &newBot)
+}
+
+func (world *world) NewOrgan(coord coordinates, parent *Bot, genome []byte) {
+	var newOrgan Organ
+	newOrgan.InitOrgan(nextBotIndex, parent, genome)
+	nextBotIndex++
+	world.setOrganOnCoord(coord, &newOrgan)
 }
 
 func (world *world) BotIsDead(bot *Bot) {
@@ -118,7 +151,7 @@ func (world *world) BotIsDead(bot *Bot) {
 	world.bots[bot.coordX][bot.coordY] = nil
 
 	var foodCoord = coordinates{bot.coordX, bot.coordY}
-	world.food[bot.coordX][bot.coordY] = &Food{foodCoord}
+	world.food[bot.coordX][bot.coordY] = &food{foodCoord}
 }
 
 func (world *world) GetCurrentTickIndex() uint64 {
