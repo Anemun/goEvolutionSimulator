@@ -16,5 +16,14 @@ message BotMessage {
 	uint32 coordX = 2;
 	uint32 coordY = 3;
 	uint32 energy = 4;
-	bytes genome = 5; 
+	bytes genome = 5;
+  repeated OrganMessage organs = 6; 
+}
+
+message OrganMessage {
+  uint64 parentBotIndex = 1;
+	uint64 organIndex = 2;
+	uint32 coordX = 3;
+	uint32 coordY = 4;
+	bytes genome = 5;
 }

@@ -53,7 +53,9 @@ func (world *world) Tick() {
 		botList[i].Tick()
 	}
 
-	serializeTick(thisTickIndex, world.bots)
+  if serializationEnabled == true {
+	  serializeTick(thisTickIndex, world.bots) 
+  }
 	thisTickIndex++
 
 }
@@ -70,6 +72,9 @@ func (world *world) WhatIsOnCoord(coord coordinates, whoIsAsking *Bot) string {
 	if world.bots[coord.x][coord.y] != nil {
 		if whoIsAsking != nil {
 			// var whoIsAskingCoord = world.loopCoords(coordinates{whoIsAsking.coordX, whoIsAsking.coordY})
+      if world.bots[coord.x][coord.y].index == whoIsAsking.index {
+        return "self"
+      }
 			if world.compareGenome(world.bots[coord.x][coord.y], world.bots[whoIsAsking.coordX][whoIsAsking.coordY]) == true {
 				return "relative"
 			}

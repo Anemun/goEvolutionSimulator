@@ -34,11 +34,54 @@ func (bot *Bot) commandLOOKa() {
 // command 10
 // Move to direction, inrelative to current direction
 func (bot *Bot) commandMOVEa() {
+  var allTargetCoordinates []coordinates
 	var direction = bot.getDirection()
+
+  allTargetCoordinates = append(allTargetCoordinates, bot.getAdjascentCoordByDirection(direction)
+  for i := range bot.organs {
+    allTargetCoordinates = append(allTargetCoordinates, bot.organs[i].getAdjascentCoordByDirection(direction)
+  }
+
+  var allClear = true
+  for i := range allTargetCoordinates {
+    if botWorld.WhatIsOnCoord(allTargetCoordinates[i], bot) == "empty" || 
+       botWorld.WhatIsOnCoord(allTargetCoordinates[i], bot) == "self" {
+        continue
+    } else {
+        allClear = false
+        break
+    }
+  } 
+
+  if allClear == true {
+    var coordToMove coordinates
+    coordToMove = bot.getAdjascentCoordByDirection(direction)
+    botWorld.setBotOnCoord(coordToMove, bot)
+    for i := range bot.organs {
+      coordToMove = bot.organs[i].getAdjascentCoordByDirection(direction)
+      botWorld.setOrganOnCoord(coordToMove, bot.organs[i])
+    }
+    bot.IncrementCommandPointer(3)
+  }
+  else {
+    bot.IncrementCommandPointer(2)
+  }
+
+bot.doNextMinorCommand = false
+
+
+/* 
 	var coordToMove = bot.getAdjascentCoordByDirection(direction)
-	var objectOnCoord = botWorld.WhatIsOnCoord(coordToMove, nil)
-	if objectOnCoord == "empty" { // Также необходимо проверка возможности сдвига всех органов в нужном направлении
-		botWorld.setBotOnCoord(coordToMove, bot)
+	var objectOnCoord = botWorld.WhatIsOnCoord(coordToMove, bot)
+	if objectOnCoord == "empty" || "self" { // Также необходимо проверка возможности сдвига всех органов в нужном направлении
+		var organCoordToMove coordinates
+    var organObjectOnCoord string
+    for i := range bot.organs {
+		  organCoordToMove = bot.organs[i].getAdjascentCoordByDirection(direction)
+      organObjectOnCoord = botWorld.WhatIsOnCoord(organCoordToMove, bot.organs[i].parent)
+      if objectOnCoord != "empty" || "self"
+	  } 
+    botWorld.setBotOnCoord(coordToMove, bot)
 		bot.IncrementCommandPointer(3)
 		// WriteLog(fmt.Sprint("Bot ", bot.index, " is moving to", coordToMove, " (command [10]MOVEa)"), 4)
 	} else {
@@ -47,7 +90,10 @@ func (bot *Bot) commandMOVEa() {
 	}
 	// Сдвиг всех органов в нужном направлении
 
-	bot.doNextMinorCommand = false
+  bot.doNextMinorCommand = false
+*/
+
+	
 }
 
 // command 15

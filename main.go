@@ -23,7 +23,9 @@ func main() {
 	//defer profile.Start(profile.CPUProfile, profile.ProfilePath(".")).Stop()
 
 	rand.Seed(time.Now().UTC().UnixNano()) // this initialize brand new randomizer for current run
-	createFolders()
+  if serializationEnabled == true {
+	  createFolders()
+  }
 	WriteLog("\n---Botworld START---", 1)
 
 	botWorld.Init()
@@ -52,7 +54,9 @@ func main() {
 		i++
 	}
 
-	FinalSerialization()
+  if serializationEnabled == true {
+	  FinalSerialization()
+  }
 
 	elapsed := time.Since(globalTimerStart)
 	fmt.Println("\n---Max bots: ", (worldSizeX * worldSizeY))

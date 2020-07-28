@@ -24,11 +24,6 @@ func (bot *Bot) SetCommandPointer(newPointer int) {
 	bot.commandPointer = LoopValue(newPointer, 0, botGenomeSize)
 }
 
-// SetCommandPointer SET
-func (organ *Organ) SetCommandPointer(newPointer int) {
-	organ.commandPointer = LoopValue(newPointer, 0, organGenomeSize)
-}
-
 // IncrementCommandPointer ++
 func (bot *Bot) IncrementCommandPointer(increment int) {
 	bot.SetCommandPointer(bot.CommandPointer() + increment)
@@ -156,31 +151,31 @@ func (bot *Bot) getAdjascentCoordByDirection(direction int) coordinates {
 		panic("This function covers only 8 directions! Update it if you change directions count")
 	}
 
-	var newCoord = coordinates{bot.coordX, bot.coordY}
+	var targetCoord = coordinates{bot.coordX, bot.coordY}
 	switch direction {
 	case 0:
-		newCoord.y++
+		targetCoord.y++
 	case 1:
-		newCoord.x++
-		newCoord.y++
+		targetCoord.x++
+		targetCoord.y++
 	case 2:
-		newCoord.x++
+		targetCoord.x++
 	case 3:
-		newCoord.x++
-		newCoord.y--
+		targetCoord.x++
+		targetCoord.y--
 	case 4:
-		newCoord.y--
+		targetCoord.y--
 	case 5:
-		newCoord.x--
-		newCoord.y--
+		targetCoord.x--
+		targetCoord.y--
 	case 6:
-		newCoord.x--
+		targetCoord.x--
 	case 7:
-		newCoord.x--
-		newCoord.y++
+		targetCoord.x--
+		targetCoord.y++
 	}
-	newCoord.x = LoopValue(newCoord.x, 0, worldSizeX)
-	newCoord.y = LoopValue(newCoord.y, 0, worldSizeY)
+	targetCoord.x = LoopValue(targetCoord.x, 0, worldSizeX)
+	targetCoord.y = LoopValue(targetCoord.y, 0, worldSizeY)
 
-	return newCoord
+	return targetCoord
 }
