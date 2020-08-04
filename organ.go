@@ -2,14 +2,14 @@ package main
 
 // Organ class
 type Organ struct {
-	parent         *Bot
-	index          uint64
-	coordX         int
-	coordY         int
-	genome         []byte
-	commandPointer int
-  doNextMinorCommand bool
-  minorCommandCount  int
+	parent             *Bot
+	index              uint64
+	coordX             int
+	coordY             int
+	genome             []byte
+	commandPointer     int
+	doNextMinorCommand bool
+	minorCommandCount  int
 	majorCommandLeft   int
 }
 
@@ -42,7 +42,7 @@ func (organ *Organ) doCommand() {
 	switch organ.genome[organ.commandPointer] {
 	case 0:
 		organ.commandSTAY()
-  case 20:
+	case 20:
 		organ.commandPHOTOSYNTESIS()
 	default:
 		organ.forwardPointer()
@@ -50,15 +50,15 @@ func (organ *Organ) doCommand() {
 }
 
 func (organ *Organ) tick() {
-  if parent.isDead {
-    return
-  }
+	if organ.parent.isDead {
+		return
+	}
 
-  organ.minorCommandCount = 0
+	organ.minorCommandCount = 0
 	organ.doNextMinorCommand = true
 	organ.majorCommandLeft = maxOrganMajorCommandsPerTurn
 
-  for organ.majorCommandLeft > 0 { // пока осталось хотя бы одно большое действие
+	for organ.majorCommandLeft > 0 { // пока осталось хотя бы одно большое действие
 		for organ.doNextMinorCommand == true &&
 			organ.minorCommandCount < maxOrganMinorCommandsPerMajorCommand { // делать маленькие действия
 			organ.minorCommandCount++

@@ -1,8 +1,8 @@
 package main
 
 // world config
-var worldSizeX = 10
-var worldSizeY = 10
+var worldSizeX = 50
+var worldSizeY = 50
 var initialBotCount = (worldSizeX + worldSizeY) / 5
 var directionsCount byte = 8
 
@@ -25,7 +25,7 @@ var mutateChance = 0.25
 var maxRelativesDifference = 1
 
 // serialize config
-var serializationEnabled = false
+var serializationEnabled = true
 var serializeTickCap = 100
 var filePath = "/home/anemun/evosimData" // linux
 //var filePath = "E:/test/"		// windows

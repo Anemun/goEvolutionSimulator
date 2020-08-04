@@ -3,7 +3,9 @@ option go_package = ".;main";
 
 message ChunkMessage {
 	uint32 chunkIndex = 1;
-	repeated TickMessage ticks = 2;
+	uint32 worldSizeX = 2;
+	uint32 worldSizeY = 3;
+	repeated TickMessage ticks = 4;
 }
 
 message TickMessage {
@@ -17,11 +19,11 @@ message BotMessage {
 	uint32 coordY = 3;
 	uint32 energy = 4;
 	bytes genome = 5;
-  repeated OrganMessage organs = 6; 
+  	repeated OrganMessage organs = 6; 
 }
 
 message OrganMessage {
-  uint64 parentBotIndex = 1;
+  	uint64 parentBotIndex = 1;
 	uint64 organIndex = 2;
 	uint32 coordX = 3;
 	uint32 coordY = 4;

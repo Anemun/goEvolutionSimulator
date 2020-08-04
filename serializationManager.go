@@ -80,6 +80,8 @@ func serializeChunk(chunk *ChunkMessage) {
 	// chunkMsg := &ChunkMessage{
 	// 	Ticks: chunk.ticks}
 	chunk.ChunkIndex = uint32(nextChunkIndex)
+	chunk.WorldSizeX = uint32(worldSizeX)
+	chunk.WorldSizeY = uint32(worldSizeY)
 	data, marshErr := proto.Marshal(chunk)
 	if marshErr != nil {
 		log.Fatal("marshaling error: ", marshErr)
