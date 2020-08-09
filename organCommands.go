@@ -6,6 +6,13 @@ func (organ *Organ) commandSTAY() {
 	organ.doNextMinorCommand = false
 }
 
+// command 10
+func (organ *Organ) commandSPEEDUP() {
+  organ.IncrementCommandPointer(1)
+  organ.parent.majorCommandPointsLeft += organ.organMoveCommandBonusPoints
+  organ.doNextMinorCommand = false
+}
+
 // command 20
 func (organ *Organ) commandPHOTOSYNTESIS() {
 	organ.parent.AddEnergy(photosyntesisEnergyGain)

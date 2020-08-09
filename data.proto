@@ -23,7 +23,7 @@ message BotMessage {
 }
 
 message OrganMessage {
-  	uint64 parentBotIndex = 1;
+  uint64 parentBotIndex = 1;
 	uint64 organIndex = 2;
 	uint32 coordX = 3;
 	uint32 coordY = 4;

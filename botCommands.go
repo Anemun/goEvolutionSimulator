@@ -15,15 +15,15 @@ func (bot *Bot) commandLOOKa() {
 	var objectOnCoord = botWorld.WhatIsOnCoord(coordToLook, bot)
 	switch objectOnCoord {
 	case "empty":
-		bot.IncrementCommandPointer(1)
-	case "bot":
 		bot.IncrementCommandPointer(2)
-	case "relative":
+	case "bot":
 		bot.IncrementCommandPointer(3)
-	case "food":
+	case "relative":
 		bot.IncrementCommandPointer(4)
-	case "self":
+	case "food":
 		bot.IncrementCommandPointer(5)
+	case "self":
+		bot.IncrementCommandPointer(6)
 	default:
 		panic("There must be one of the values above!")
 	}
@@ -95,7 +95,25 @@ func (bot *Bot) commandMOVEa() {
 
 // command 15
 func (bot *Bot) commandEAT() {
-	// WriteLog(fmt.Sprint("Bot ", bot.index, " NOT IMPLEMENTED", " (command [15]commandEAT)"), 4)
+  var direction = bot.getDirection()
+  var coordToBite = bot.getAdjascentCoordByDirection(direction)
+	var objectOnCoord = botWorld.WhatIsOnCoord(coordToBite, nil)
+  switch objectOnCoord {
+	case "empty":
+		bot.IncrementCommandPointer(2)
+	case "bot":
+		bot.IncrementCommandPointer(3)
+	case "relative":
+		bot.IncrementCommandPointer(3)        // так специально, своих и чужих не различаем
+	case "food":
+		bot.IncrementCommandPointer(4)
+	case "self":
+		bot.IncrementCommandPointer(5)
+	default:
+		panic("There must be one of the values above!")
+	}
+  botWorld.BiteObject(coordToBite, bot)
+	// WriteLog(fmt.Sprint("Bot ", bot.index, " bites ", objectOnCoord, " gains ", foodEnergyGain, " energy, " (command [15]commandEAT)"), 4)
 	bot.forwardPointer()
 }
 
@@ -125,7 +143,7 @@ func (bot *Bot) commandORGAN() {
 				i++
 			}
 			botWorld.NewOrgan(organCoord, bot, newGenome)
-			bot.IncrementCommandPointer(1)
+			bot.IncrementCommandPointer(organGenomeSize + 2)
 			break
 		}
 	}
@@ -146,7 +164,7 @@ func (bot *Bot) commandCHILD() {
 			botWorld.NewBot(childCoord, bot)
 			bot.energy = int(float64(bot.energy) * childEnergyFraction)
 			// WriteLog(fmt.Sprint("Bot ", bot.index, " create child at ", childCoord, " (command [30]commandCHILD)"), 4)
-			bot.IncrementCommandPointer(1)
+			bot.IncrementCommandPointer(2)
 			break
 		}
 	}

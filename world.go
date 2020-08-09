@@ -60,12 +60,7 @@ func (world *world) Tick() {
 
 }
 
-func (world *world) loopCoords(coord coordinates) coordinates {
-	coord.x = LoopValue(coord.x, 0, worldSizeX)
-	coord.y = LoopValue(coord.y, 0, worldSizeY)
 
-	return coord
-}
 
 func (world *world) WhatIsOnCoord(coord coordinates, whoIsAsking *Bot) string {
 	coord = world.loopCoords(coord)
@@ -98,6 +93,38 @@ func (world *world) WhatIsOnCoord(coord coordinates, whoIsAsking *Bot) string {
 	}
 
 	return "empty"
+}
+
+func (world *world) BiteObject(coord coordinates, consumer *Bot) {
+  if world.food[coord.x][coord.y] != nil {
+    world.food[coord.x][coord.y] = nil
+    consumer.AddEnergy(foodEnergyGain)
+    return
+  }
+
+  var victim *Bot = nil
+  if world.organs[coord.x][coord.y] != nil {
+    victim = world.organs[coord.x][coord.y].parent
+  } else if world.bots[coord.x][coord.y] != nil {
+    victim = world.bots[coord.x][coord.y]
+  } 
+
+  if victim != nil {
+    var energyAmount = attackEnergyGain
+    if victim.energy < energyAmount {
+      energyAmount = victim.energy
+    }
+    victim.AddEnergy(-1*energyAmount)
+    consumer.AddEnergy(energyAmount)
+    if victim.energy <= 0 {
+      BotIsDead(victim)
+    }
+    return
+  }
+
+  if victim == nil {
+    return
+  }
 }
 
 func (world *world) compareGenome(bot1 *Bot, bot2 *Bot) bool {
@@ -154,11 +181,24 @@ func (world *world) NewOrgan(coord coordinates, parent *Bot, genome []byte) {
 func (world *world) BotIsDead(bot *Bot) {
 	world.bots[bot.coordX][bot.coordY].isDead = true
 	world.bots[bot.coordX][bot.coordY] = nil
+  var foodCoord coordinates
+  for i := range bot.organs {
+    world.organs[bot.organs[i].coordX][bot.organs[i].coordY] = nil
+    foodCoord = coordinates{bot.organs[i].coordX, bot.organs[i].coordY}
+    world.food[bot.organs[i].coordX][bot.organs[i].coordY] = &food{foodCoord}
+  }
 
-	var foodCoord = coordinates{bot.coordX, bot.coordY}
+	foodCoord = coordinates{bot.coordX, bot.coordY}
 	world.food[bot.coordX][bot.coordY] = &food{foodCoord}
 }
 
 func (world *world) GetCurrentTickIndex() uint64 {
 	return thisTickIndex
+}
+
+func (world *world) loopCoords(coord coordinates) coordinates {
+	coord.x = LoopValue(coord.x, 0, worldSizeX)
+	coord.y = LoopValue(coord.y, 0, worldSizeY)
+
+	return coord
 }

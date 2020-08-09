@@ -16,7 +16,7 @@ type Bot struct {
 	isDead             bool
 	doNextMinorCommand bool
 	minorCommandCount  int
-	majorCommandLeft   int
+	majorCommandPointsLeft   int
 }
 
 // SetCommandPointer SET
@@ -112,20 +112,20 @@ func (bot *Bot) Tick() {
 	bot.AddEnergy(-1 * (botEnergyTickCost + len(bot.organs)*botEnergyTickCostPerOrgan))
 	bot.minorCommandCount = 0
 	bot.doNextMinorCommand = true
-	bot.majorCommandLeft = maxMajorCommandsPerTurn
+	bot.majorCommandPointsLeft = initialMajorCommandPointsPerTurn
 
 	for i := range bot.organs {
 		bot.organs[i].tick()
 	}
 
 	// Бот имеет несколько больших действий, в каждом есть энное количество маленьких
-	for bot.majorCommandLeft > 0 { // пока осталось хотя бы одно большое действие
+	for bot.majorCommandPointsLeft >= majorCommandPointsCostPerAcrion { // пока остались очки на хотя бы одно большое действие
 		for bot.doNextMinorCommand == true &&
 			bot.minorCommandCount < maxMinorCommandsPerMajorCommand { // делать маленькие действия
 			bot.minorCommandCount++
 			bot.doCommand()
 		}
-		bot.majorCommandLeft--
+		bot.majorCommandPointsLeft -= majorCommandPointsCostPerAcrion
 		bot.minorCommandCount = 0
 		bot.doNextMinorCommand = true
 	}
