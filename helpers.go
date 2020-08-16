@@ -14,8 +14,10 @@ func LoopValue(value int, min int, max int) int {
 
 	if value < min {
 		value = max - (value % max)
-		// value = max + (value - min)
+		// value = max + (value - min) 
 	}
+
+
 
 	if value >= max {
 		value = min + (value % max)
@@ -23,5 +25,41 @@ func LoopValue(value int, min int, max int) int {
 	}
 
 	//WriteLog(fmt.Sprint("Result: ", value), 5)
+	return value
+}
+
+package main
+
+import (
+	"fmt"
+)
+
+func main() {
+	LoopValue(0, 0, 10)	// must be 0
+	LoopValue(-1, 0, 10)	// must be 9
+	LoopValue(2, 0, 10)	// must be 2
+	LoopValue(11, 0, 10)	// must be 1
+	LoopValue(10, 0, 10)	// must be 0
+	LoopValue(4, 5, 10)	// must be 14
+	LoopValue(-5, -5, 5)	// must be -5
+	LoopValue(0, -5, 5)	// must be -5
+	LoopValue(-2, -5, 5)	// must be -2
+	LoopValue(-6, -5, 5)	// must be -1
+}
+
+func LoopValue(value int, min int, capacity int) int {
+	fmt.Println(fmt.Sprint("Looping: value=", value, ", min=", min, ", capacity =", capacity ))
+	while value < min {
+    diff := min - value
+    value = min+capacity-diff
+  }
+
+  while value >= min+capacity {
+    diff := value-max
+    value = min + diff
+  }
+
+
+	fmt.Println(fmt.Sprint("Result: ", value))
 	return value
 }
