@@ -42,6 +42,8 @@ func (organ *Organ) doCommand() {
 	switch organ.genome[organ.commandPointer] {
 	case 0:
 		organ.commandSTAY()
+  case 10:
+    organ.commandSPEEDUP()
 	case 20:
 		organ.commandPHOTOSYNTESIS()
 	default:
@@ -68,6 +70,14 @@ func (organ *Organ) tick() {
 		organ.minorCommandCount = 0
 		organ.doNextMinorCommand = true
 	}
+}
+
+// Take value from next genome byte and make a direction out of it (default direction count is 8 so value from 0 to 7, where 0 is up, 1 is up-right and 7 is up-left)
+func (organ *Organ) getDirection() int {
+	var direction int
+	cp := LoopValue(organ.CommandPointer()+1, 0, organGenomeSize)
+	direction = int(organ.genome[cp] % directionsCount)
+	return direction
 }
 
 func (organ *Organ) getAdjascentCoordByDirection(direction int) coordinates {

@@ -58,6 +58,9 @@ func (world *world) Tick() {
   }
 	thisTickIndex++
 
+  if len(botList) == 0 {
+    state = "Concluded"
+  }
 }
 
 
