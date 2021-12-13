@@ -58,6 +58,19 @@ func serializeTick(index uint64, bots [][]*Bot) {
 					Energy: uint32(bot.energy),
 					Genome: bot.genome}
 
+				for o := range bots[i][j].organs {
+					if bots[i][j].organs[o] != nil {
+						organ := bots[i][j].organs[o]
+
+						organMsg := &OrganMessage{
+							ParentBotIndex: bot.index,
+							OrganIndex:     organ.index,
+							CoordX:         uint32(organ.coordX),
+							CoordY:         uint32(organ.coordY),
+							Genome:         organ.genome}
+						botMsg.Organs = append(botMsg.Organs, organMsg)
+					}
+				}
 				b = append(b, botMsg)
 			}
 		}

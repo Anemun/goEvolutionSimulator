@@ -14,6 +14,7 @@ type coordinates struct {
 
 var nextBotIndex uint64
 var thisTickIndex uint64
+var aliveBotCount uint64
 
 // Call this to init new world
 func (world *world) Init() {
@@ -48,28 +49,26 @@ func (world *world) Tick() {
 			}
 		}
 	}
-
+	aliveBotCount = uint64(len(botList))
 	for i := range botList {
 		botList[i].Tick()
 	}
 
-  if serializationEnabled == true {
-	  serializeTick(thisTickIndex, world.bots) 
-  }
+	if serializationEnabled == true {
+		serializeTick(thisTickIndex, world.bots)
+	}
 	thisTickIndex++
 
 }
-
-
 
 func (world *world) WhatIsOnCoord(coord coordinates, whoIsAsking *Bot) string {
 	coord = world.loopCoords(coord)
 	if world.bots[coord.x][coord.y] != nil {
 		if whoIsAsking != nil {
 			// var whoIsAskingCoord = world.loopCoords(coordinates{whoIsAsking.coordX, whoIsAsking.coordY})
-      if world.bots[coord.x][coord.y].index == whoIsAsking.index {
-        return "self"
-      }
+			if world.bots[coord.x][coord.y].index == whoIsAsking.index {
+				return "self"
+			}
 			if world.compareGenome(world.bots[coord.x][coord.y], world.bots[whoIsAsking.coordX][whoIsAsking.coordY]) == true {
 				return "relative"
 			}
@@ -96,35 +95,35 @@ func (world *world) WhatIsOnCoord(coord coordinates, whoIsAsking *Bot) string {
 }
 
 func (world *world) BiteObject(coord coordinates, consumer *Bot) {
-  if world.food[coord.x][coord.y] != nil {
-    world.food[coord.x][coord.y] = nil
-    consumer.AddEnergy(foodEnergyGain)
-    return
-  }
+	if world.food[coord.x][coord.y] != nil {
+		world.food[coord.x][coord.y] = nil
+		consumer.AddEnergy(foodEnergyGain)
+		return
+	}
 
-  var victim *Bot = nil
-  if world.organs[coord.x][coord.y] != nil {
-    victim = world.organs[coord.x][coord.y].parent
-  } else if world.bots[coord.x][coord.y] != nil {
-    victim = world.bots[coord.x][coord.y]
-  } 
+	var victim *Bot = nil
+	if world.organs[coord.x][coord.y] != nil {
+		victim = world.organs[coord.x][coord.y].parent
+	} else if world.bots[coord.x][coord.y] != nil {
+		victim = world.bots[coord.x][coord.y]
+	}
 
-  if victim != nil {
-    var energyAmount = attackEnergyGain
-    if victim.energy < energyAmount {
-      energyAmount = victim.energy
-    }
-    victim.AddEnergy(-1*energyAmount)
-    consumer.AddEnergy(energyAmount)
-    if victim.energy <= 0 {
-      BotIsDead(victim)
-    }
-    return
-  }
+	if victim != nil {
+		var energyAmount = attackEnergyGain
+		if victim.energy < energyAmount {
+			energyAmount = victim.energy
+		}
+		victim.AddEnergy(-1 * energyAmount)
+		consumer.AddEnergy(energyAmount)
+		if victim.energy <= 0 {
+			world.BotIsDead(victim)
+		}
+		return
+	}
 
-  if victim == nil {
-    return
-  }
+	if victim == nil {
+		return
+	}
 }
 
 func (world *world) compareGenome(bot1 *Bot, bot2 *Bot) bool {
@@ -181,12 +180,12 @@ func (world *world) NewOrgan(coord coordinates, parent *Bot, genome []byte) {
 func (world *world) BotIsDead(bot *Bot) {
 	world.bots[bot.coordX][bot.coordY].isDead = true
 	world.bots[bot.coordX][bot.coordY] = nil
-  var foodCoord coordinates
-  for i := range bot.organs {
-    world.organs[bot.organs[i].coordX][bot.organs[i].coordY] = nil
-    foodCoord = coordinates{bot.organs[i].coordX, bot.organs[i].coordY}
-    world.food[bot.organs[i].coordX][bot.organs[i].coordY] = &food{foodCoord}
-  }
+	var foodCoord coordinates
+	for i := range bot.organs {
+		world.organs[bot.organs[i].coordX][bot.organs[i].coordY] = nil
+		foodCoord = coordinates{bot.organs[i].coordX, bot.organs[i].coordY}
+		world.food[bot.organs[i].coordX][bot.organs[i].coordY] = &food{foodCoord}
+	}
 
 	foodCoord = coordinates{bot.coordX, bot.coordY}
 	world.food[bot.coordX][bot.coordY] = &food{foodCoord}

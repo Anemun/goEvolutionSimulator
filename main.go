@@ -23,9 +23,9 @@ func main() {
 	//defer profile.Start(profile.CPUProfile, profile.ProfilePath(".")).Stop()
 
 	rand.Seed(time.Now().UTC().UnixNano()) // this initialize brand new randomizer for current run
-  if serializationEnabled == true {
-	  createFolders()
-  }
+	if serializationEnabled == true {
+		createFolders()
+	}
 	WriteLog("\n---Botworld START---", 1)
 
 	botWorld.Init()
@@ -44,7 +44,7 @@ func main() {
 			var tps string // ticks per second
 			tps = fmt.Sprint(math.Ceil((float64(botWorld.GetCurrentTickIndex())/elsap.Seconds())*100) / 100)
 
-			WriteLog(fmt.Sprint("Processing tick #", botWorld.GetCurrentTickIndex(), " out of ", maxTickLimit, " (", tps, " ticks/s)"), 2)
+			WriteLog(fmt.Sprint("Processing tick #", botWorld.GetCurrentTickIndex(), " out of ", maxTickLimit, " (", tps, " ticks/s)", " Bots alive: ", aliveBotCount), 2)
 		}
 
 		botWorld.Tick()
@@ -54,12 +54,12 @@ func main() {
 		i++
 	}
 
-  if serializationEnabled == true {
-	  FinalSerialization()
-  }
+	if serializationEnabled == true {
+		FinalSerialization()
+	}
 
 	elapsed := time.Since(globalTimerStart)
-	fmt.Println("\n---Max bots: ", (worldSizeX * worldSizeY))
+	fmt.Println("\n---Max possible bots: ", (worldSizeX * worldSizeY))
 	fmt.Println(maxTickLimit, "Ticks took", elapsed)
 	fmt.Println(int((float64(maxTickLimit) / elapsed.Seconds())), "ticks per second---")
 

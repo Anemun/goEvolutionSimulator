@@ -8,9 +8,9 @@ func (organ *Organ) commandSTAY() {
 
 // command 10
 func (organ *Organ) commandSPEEDUP() {
-  organ.IncrementCommandPointer(1)
-  organ.parent.majorCommandPointsLeft += organ.organMoveCommandBonusPoints
-  organ.doNextMinorCommand = false
+	organ.IncrementCommandPointer(1)
+	organ.parent.majorCommandPointsLeft += organMoveCommandBonusPoints
+	organ.doNextMinorCommand = false
 }
 
 // command 20
