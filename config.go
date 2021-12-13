@@ -1,8 +1,8 @@
 package main
 
 // world config
-var worldSizeX = 50
-var worldSizeY = 50
+var worldSizeX = 200
+var worldSizeY = 200
 var initialBotCount = (worldSizeX + worldSizeY) / 5
 var directionsCount byte = 8
 
@@ -42,7 +42,7 @@ var serializeGZ = false
 
 // other
 var logLevel byte = 5
-var maxTickLimit = 2000
+var maxTickLimit = 20000
 
 //debug
 var debugfillEntireWorld = false

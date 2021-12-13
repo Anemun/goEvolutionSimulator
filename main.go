@@ -21,6 +21,8 @@ func main() {
 	// Запуск профайлера ("github.com/pkg/profile")
 	// Для вывода результатов надо в терминале запустить go tool pprof .\cpu.pprof
 	//defer profile.Start(profile.CPUProfile, profile.ProfilePath(".")).Stop()
+  
+  state := "Running"
 
 	rand.Seed(time.Now().UTC().UnixNano()) // this initialize brand new randomizer for current run
 	if serializationEnabled == true {
@@ -38,7 +40,7 @@ func main() {
 	globalTimerStart := time.Now()
 
 	i := 1
-	for i < maxTickLimit {
+	for i < maxTickLimit && state == "Running" {
 		if botWorld.GetCurrentTickIndex()%100 == 0 {
 			elsap := time.Since(globalTimerStart)
 			var tps string // ticks per second

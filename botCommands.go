@@ -113,8 +113,8 @@ func (bot *Bot) commandEAT() {
 		panic("There must be one of the values above!")
 	}
   botWorld.BiteObject(coordToBite, bot)
-	// WriteLog(fmt.Sprint("Bot ", bot.index, " bites ", objectOnCoord, " gains ", foodEnergyGain, " energy, " (command [15]commandEAT)"), 4)
-	bot.forwardPointer()
+	// WriteLog(fmt.Sprint("Bot ", bot.index, " bites ", objectOnCoord, " gains energy, " (command [15]commandEAT)"), 4)
+	bot.doNextMinorCommand = false
 }
 
 // command 20
