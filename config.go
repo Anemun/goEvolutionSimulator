@@ -1,14 +1,14 @@
 package main
 
 // world config
-var worldSizeX = 200
-var worldSizeY = 200
+var worldSizeX = 10
+var worldSizeY = 10
 var initialBotCount = (worldSizeX + worldSizeY) / 5
 var directionsCount byte = 8
 
 // bot config
 var botGenomeSize = 64
-var initialMajorCommandPointsPerTurn = 10                // Чтобы не заморачиваться с float, вместо кол-ва команд используем очки действия.
+var initialMajorCommandPointsPerTurn = 10 // Чтобы не заморачиваться с float, вместо кол-ва команд используем очки действия.
 var majorCommandPointsCostPerAcrion = 10
 var maxMinorCommandsPerMajorCommand = 10
 var maxBaseBotEnergy = 64
@@ -32,7 +32,7 @@ var organMoveCommandBonusPoints = 5
 var eatOrganEnergyGain = 3
 
 // serialize config
-var serializationEnabled = false
+var serializationEnabled = true
 var serializeTickCap = 100
 var filePath = "/home/anemun/evosimData" // linux
 //var filePath = "E:/test/"		// windows
@@ -42,8 +42,9 @@ var serializeGZ = false
 
 // other
 var logLevel byte = 5
-var maxTickLimit = 20000
+var maxTickLimit = 100
 
 //debug
 var debugfillEntireWorld = false
+var debugPlaceCustomBots = true
 var debugcheckCollisions = true

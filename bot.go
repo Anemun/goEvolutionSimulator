@@ -6,17 +6,17 @@ import (
 
 // Bot class
 type Bot struct {
-	index              uint64
-	coordX             int
-	coordY             int
-	energy             int
-	genome             []byte
-	organs             []*Organ
-	commandPointer     int
-	isDead             bool
-	doNextMinorCommand bool
-	minorCommandCount  int
-	majorCommandPointsLeft   int
+	index                  uint64
+	coordX                 int
+	coordY                 int
+	energy                 int
+	genome                 []byte
+	organs                 []*Organ
+	commandPointer         int
+	isDead                 bool
+	doNextMinorCommand     bool
+	minorCommandCount      int
+	majorCommandPointsLeft int
 }
 
 // SetCommandPointer SET
@@ -88,8 +88,8 @@ func (bot *Bot) doCommand() {
 		bot.commandSTAY()
 	case 5:
 		bot.commandLOOKa()
-	// case 10:
-	// 	bot.commandMOVEa()
+	case 10:
+		bot.commandMOVEa()
 	// case 15:
 	// 	bot.commandEAT()
 	case 20:
@@ -131,7 +131,7 @@ func (bot *Bot) Tick() {
 	}
 
 	// botWorld.setBotOnCoord(Coord{bot.CoordX + 1, bot.CoordY + 1}, *bot)
-	// WriteLog(fmt.Sprint("Tick ", ThisTickIndex, ": bot ", bot.index, " ", "is on tile ", bot.coordX, ".", bot.coordY, ". Bot energy: ", bot.energy), 4)
+	// WriteLog(fmt.Sprint("Tick ", botWorld.GetCurrentTickIndex(), ": bot ", bot.index, " ", "is on tile ", bot.coordX, ".", bot.coordY, ". Bot energy: ", bot.energy, ". Bot pointer: [", bot.commandPointer, "]: ", bot.genome[bot.commandPointer]), 4)
 
 	if bot.energy <= 0 {
 		botWorld.BotIsDead(bot)

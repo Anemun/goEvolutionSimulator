@@ -59,9 +59,9 @@ func (world *world) Tick() {
 	}
 	thisTickIndex++
 
-  if len(botList) == 0 {
-    state = "Concluded"
-  }
+	//   if len(botList) == 0 {
+	//     state = "Concluded"
+	//   }
 }
 
 func (world *world) WhatIsOnCoord(coord coordinates, whoIsAsking *Bot) string {
@@ -171,6 +171,7 @@ func (world *world) NewBot(coord coordinates, parent *Bot) {
 	newBot.InitBot(nextBotIndex, parent)
 	nextBotIndex++
 	world.setBotOnCoord(coord, &newBot)
+	// WriteLog(fmt.Sprint("New bot: bot ", newBot.index, " ", "is on tile ", newBot.coordX, ".", newBot.coordY, ". Bot pointer: [", newBot.commandPointer, "]: ", newBot.genome[newBot.commandPointer]), 4)
 }
 
 func (world *world) NewOrgan(coord coordinates, parent *Bot, genome []byte) {

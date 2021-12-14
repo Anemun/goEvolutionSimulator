@@ -14,16 +14,16 @@ func (organ *Organ) commandSPEEDUP() {
 }
 
 func (organ *Organ) commandEAT() {
-  var direction = organ.getDirection()
-  var coordToBite = organ.getAdjascentCoordByDirection(direction)
+	var direction = organ.getDirection()
+	var coordToBite = organ.getAdjascentCoordByDirection(direction)
 	var objectOnCoord = botWorld.WhatIsOnCoord(coordToBite, nil)
-  switch objectOnCoord {
+	switch objectOnCoord {
 	case "empty":
 		organ.IncrementCommandPointer(2)
 	case "bot":
 		organ.IncrementCommandPointer(3)
 	case "relative":
-		organ.IncrementCommandPointer(3)        // так специально, своих и чужих не различаем, их должна различить команда ПОСМОТРЕТЬ бота #TODO подумать об этом, орган не может смотреть
+		organ.IncrementCommandPointer(3) // так специально, своих и чужих не различаем, их должна различить команда ПОСМОТРЕТЬ бота #TODO подумать об этом, орган не может смотреть
 	case "food":
 		organ.IncrementCommandPointer(4)
 	case "self":
@@ -31,8 +31,8 @@ func (organ *Organ) commandEAT() {
 	default:
 		panic("There must be one of the values above!")
 	}
-  botWorld.BiteObject(coordToBite, organ.parent)
-	// WriteLog(fmt.Sprint("Organ ", organ.index, " bites ", objectOnCoord, " bot gains energy, " (command [15]commandEAT)"), 4)
+	botWorld.BiteObject(coordToBite, organ.parent)
+	// WriteLog(fmt.Sprint("Organ ", organ.index, " bites ", objectOnCoord, " bot gains energy", " (command [15]commandEAT)"), 4)
 	organ.doNextMinorCommand = false
 }
 

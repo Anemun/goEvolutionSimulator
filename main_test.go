@@ -24,7 +24,7 @@ func TestLoopValue(t *testing.T) {
 		t.Error("Loop value -11, min -10, max -5 must be -6!")
 	}
 	if LoopValue(4294967296, 0, 64) != 0 {
-		t.Error("Loop value 4294967296, min0, max 64 must be 0!")
+		t.Error("Loop value 4294967296, min 0, max 64 must be 0!")
 	}
 }
 

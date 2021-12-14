@@ -21,8 +21,8 @@ func main() {
 	// Запуск профайлера ("github.com/pkg/profile")
 	// Для вывода результатов надо в терминале запустить go tool pprof .\cpu.pprof
 	//defer profile.Start(profile.CPUProfile, profile.ProfilePath(".")).Stop()
-  
-  state := "Running"
+
+	state := "Running"
 
 	rand.Seed(time.Now().UTC().UnixNano()) // this initialize brand new randomizer for current run
 	if serializationEnabled == true {
@@ -33,6 +33,8 @@ func main() {
 	botWorld.Init()
 	if debugfillEntireWorld == true {
 		fillEntireWorldWithBots()
+	} else if debugPlaceCustomBots == true {
+		placeTestBots()
 	} else {
 		placeInitialBots(initialBotCount)
 	}
@@ -97,15 +99,18 @@ func fillEntireWorldWithBots() {
 
 // TEST CODE
 func placeTestBots() {
-	botWorld.NewBot(coordinates{3, 3}, nil)
-	botWorld.bots[3][3].genome[0] = 10
-	botWorld.bots[3][3].genome[1] = 0
-	botWorld.bots[3][3].genome[3] = 61
+	botWorld.NewBot(coordinates{5, 5}, nil)
+	botWorld.bots[5][5].energy = 63
+	botWorld.bots[5][5].genome[0] = 25
+	botWorld.bots[5][5].genome[10] = 10
+	botWorld.bots[5][5].genome[11] = 0
+	botWorld.bots[5][5].genome[12] = 62
 
-	botWorld.NewBot(coordinates{7, 7}, nil)
-	botWorld.bots[7][7].genome[0] = 10
-	botWorld.bots[7][7].genome[1] = 2
-	botWorld.bots[7][7].genome[3] = 61
+	botWorld.NewBot(coordinates{5, 8}, nil)
+	botWorld.bots[5][8].energy = 63
+	botWorld.bots[5][8].genome[0] = 0
+	botWorld.bots[5][8].genome[1] = 0
+	botWorld.bots[5][8].genome[3] = 0
 }
 
 func collisionDetection() {

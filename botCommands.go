@@ -56,9 +56,11 @@ func (bot *Bot) commandMOVEa() {
 	if allClear == true {
 		var coordToMove coordinates
 		coordToMove = bot.getAdjascentCoordByDirection(direction)
+		// WriteLog(fmt.Sprint("Bot ", bot.index, " is moving to", coordToMove, " (command [10]MOVEa)"), 4)
 		botWorld.setBotOnCoord(coordToMove, bot)
 		for i := range bot.organs {
 			coordToMove = bot.organs[i].getAdjascentCoordByDirection(direction)
+			// WriteLog(fmt.Sprint("Bot ", bot.index, "organ", bot.organs[i], " is moving to", coordToMove, " (command [10]MOVEa)"), 4)
 			botWorld.setOrganOnCoord(coordToMove, bot.organs[i])
 		}
 		bot.IncrementCommandPointer(3)
@@ -95,16 +97,16 @@ func (bot *Bot) commandMOVEa() {
 
 // command 15
 func (bot *Bot) commandEAT() {
-  var direction = bot.getDirection()
-  var coordToBite = bot.getAdjascentCoordByDirection(direction)
+	var direction = bot.getDirection()
+	var coordToBite = bot.getAdjascentCoordByDirection(direction)
 	var objectOnCoord = botWorld.WhatIsOnCoord(coordToBite, nil)
-  switch objectOnCoord {
+	switch objectOnCoord {
 	case "empty":
 		bot.IncrementCommandPointer(2)
 	case "bot":
 		bot.IncrementCommandPointer(3)
 	case "relative":
-		bot.IncrementCommandPointer(3)        // так специально, своих и чужих не различаем
+		bot.IncrementCommandPointer(3) // так специально, своих и чужих не различаем
 	case "food":
 		bot.IncrementCommandPointer(4)
 	case "self":
@@ -112,7 +114,7 @@ func (bot *Bot) commandEAT() {
 	default:
 		panic("There must be one of the values above!")
 	}
-  botWorld.BiteObject(coordToBite, bot)
+	botWorld.BiteObject(coordToBite, bot)
 	// WriteLog(fmt.Sprint("Bot ", bot.index, " bites ", objectOnCoord, " gains energy, " (command [15]commandEAT)"), 4)
 	bot.doNextMinorCommand = false
 }
@@ -143,14 +145,15 @@ func (bot *Bot) commandORGAN() {
 				i++
 			}
 			botWorld.NewOrgan(organCoord, bot, newGenome)
-			bot.IncrementCommandPointer(organGenomeSize + 2)
+			bot.IncrementCommandPointer(1)
+
+			// WriteLog(fmt.Sprint("Bot ", bot.index, " create organ at ", organCoord, " (command [25]commandORGAN)"), 4)
 			break
 		}
 	}
 	bot.IncrementCommandPointer(organGenomeSize + 1)
 
 	bot.doNextMinorCommand = false
-	// WriteLog(fmt.Sprint("Bot ", bot.index, " create organ at ", organCoord, " (command [25]commandORGAN)"), 4)
 }
 
 // command 30
@@ -175,7 +178,7 @@ func (bot *Bot) commandCHILD() {
 }
 
 func (bot *Bot) forwardPointer() {
-	// WriteLog(fmt.Sprint("Bot ", bot.index, " is forwarding pointer from ", bot.CommandPointer(), " to ", bot.CommandPointer()+bot.genome[bot.commandPointer]), 4)
+	// WriteLog(fmt.Sprint("Bot ", bot.index, " is forwarding pointer from ", bot.CommandPointer(), " to ", bot.CommandPointer()+int(bot.genome[bot.commandPointer])), 4)
 	bot.SetCommandPointer(bot.CommandPointer() + int(bot.genome[bot.commandPointer]))
 	bot.doNextMinorCommand = true
 }
