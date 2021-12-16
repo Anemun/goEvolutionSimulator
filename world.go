@@ -55,7 +55,7 @@ func (world *world) Tick() {
 	}
 
 	if serializationEnabled == true {
-		serializeTick(thisTickIndex, world.bots)
+		serializeTick(thisTickIndex, world.bots, world.food)
 	}
 	thisTickIndex++
 

@@ -85,6 +85,24 @@ func (z *SerBot) DecodeMsg(dc *msgp.Reader) (err error) {
 					}
 				}
 			}
+		case "BotCarnRating":
+			z.BotCarnRating, err = dc.ReadInt()
+			if err != nil {
+				err = msgp.WrapError(err, "BotCarnRating")
+				return
+			}
+		case "BotHerbRating":
+			z.BotHerbRating, err = dc.ReadInt()
+			if err != nil {
+				err = msgp.WrapError(err, "BotHerbRating")
+				return
+			}
+		case "BotCommandPointer":
+			z.BotCommandPointer, err = dc.ReadInt()
+			if err != nil {
+				err = msgp.WrapError(err, "BotCommandPointer")
+				return
+			}
 		default:
 			err = dc.Skip()
 			if err != nil {
@@ -98,9 +116,9 @@ func (z *SerBot) DecodeMsg(dc *msgp.Reader) (err error) {
 
 // EncodeMsg implements msgp.Encodable
 func (z *SerBot) EncodeMsg(en *msgp.Writer) (err error) {
-	// map header, size 6
+	// map header, size 9
 	// write "BotIndex"
-	err = en.Append(0x86, 0xa8, 0x42, 0x6f, 0x74, 0x49, 0x6e, 0x64, 0x65, 0x78)
+	err = en.Append(0x89, 0xa8, 0x42, 0x6f, 0x74, 0x49, 0x6e, 0x64, 0x65, 0x78)
 	if err != nil {
 		return
 	}
@@ -173,15 +191,45 @@ func (z *SerBot) EncodeMsg(en *msgp.Writer) (err error) {
 			}
 		}
 	}
+	// write "BotCarnRating"
+	err = en.Append(0xad, 0x42, 0x6f, 0x74, 0x43, 0x61, 0x72, 0x6e, 0x52, 0x61, 0x74, 0x69, 0x6e, 0x67)
+	if err != nil {
+		return
+	}
+	err = en.WriteInt(z.BotCarnRating)
+	if err != nil {
+		err = msgp.WrapError(err, "BotCarnRating")
+		return
+	}
+	// write "BotHerbRating"
+	err = en.Append(0xad, 0x42, 0x6f, 0x74, 0x48, 0x65, 0x72, 0x62, 0x52, 0x61, 0x74, 0x69, 0x6e, 0x67)
+	if err != nil {
+		return
+	}
+	err = en.WriteInt(z.BotHerbRating)
+	if err != nil {
+		err = msgp.WrapError(err, "BotHerbRating")
+		return
+	}
+	// write "BotCommandPointer"
+	err = en.Append(0xb1, 0x42, 0x6f, 0x74, 0x43, 0x6f, 0x6d, 0x6d, 0x61, 0x6e, 0x64, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x65, 0x72)
+	if err != nil {
+		return
+	}
+	err = en.WriteInt(z.BotCommandPointer)
+	if err != nil {
+		err = msgp.WrapError(err, "BotCommandPointer")
+		return
+	}
 	return
 }
 
 // MarshalMsg implements msgp.Marshaler
 func (z *SerBot) MarshalMsg(b []byte) (o []byte, err error) {
 	o = msgp.Require(b, z.Msgsize())
-	// map header, size 6
+	// map header, size 9
 	// string "BotIndex"
-	o = append(o, 0x86, 0xa8, 0x42, 0x6f, 0x74, 0x49, 0x6e, 0x64, 0x65, 0x78)
+	o = append(o, 0x89, 0xa8, 0x42, 0x6f, 0x74, 0x49, 0x6e, 0x64, 0x65, 0x78)
 	o = msgp.AppendUint64(o, z.BotIndex)
 	// string "BotCoordX"
 	o = append(o, 0xa9, 0x42, 0x6f, 0x74, 0x43, 0x6f, 0x6f, 0x72, 0x64, 0x58)
@@ -209,6 +257,15 @@ func (z *SerBot) MarshalMsg(b []byte) (o []byte, err error) {
 			}
 		}
 	}
+	// string "BotCarnRating"
+	o = append(o, 0xad, 0x42, 0x6f, 0x74, 0x43, 0x61, 0x72, 0x6e, 0x52, 0x61, 0x74, 0x69, 0x6e, 0x67)
+	o = msgp.AppendInt(o, z.BotCarnRating)
+	// string "BotHerbRating"
+	o = append(o, 0xad, 0x42, 0x6f, 0x74, 0x48, 0x65, 0x72, 0x62, 0x52, 0x61, 0x74, 0x69, 0x6e, 0x67)
+	o = msgp.AppendInt(o, z.BotHerbRating)
+	// string "BotCommandPointer"
+	o = append(o, 0xb1, 0x42, 0x6f, 0x74, 0x43, 0x6f, 0x6d, 0x6d, 0x61, 0x6e, 0x64, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x65, 0x72)
+	o = msgp.AppendInt(o, z.BotCommandPointer)
 	return
 }
 
@@ -290,6 +347,24 @@ func (z *SerBot) UnmarshalMsg(bts []byte) (o []byte, err error) {
 					}
 				}
 			}
+		case "BotCarnRating":
+			z.BotCarnRating, bts, err = msgp.ReadIntBytes(bts)
+			if err != nil {
+				err = msgp.WrapError(err, "BotCarnRating")
+				return
+			}
+		case "BotHerbRating":
+			z.BotHerbRating, bts, err = msgp.ReadIntBytes(bts)
+			if err != nil {
+				err = msgp.WrapError(err, "BotHerbRating")
+				return
+			}
+		case "BotCommandPointer":
+			z.BotCommandPointer, bts, err = msgp.ReadIntBytes(bts)
+			if err != nil {
+				err = msgp.WrapError(err, "BotCommandPointer")
+				return
+			}
 		default:
 			bts, err = msgp.Skip(bts)
 			if err != nil {
@@ -312,6 +387,7 @@ func (z *SerBot) Msgsize() (s int) {
 			s += z.BotOrgans[za0001].Msgsize()
 		}
 	}
+	s += 14 + msgp.IntSize + 14 + msgp.IntSize + 18 + msgp.IntSize
 	return
 }
 
@@ -571,6 +647,134 @@ func (z *SerChunk) Msgsize() (s int) {
 			s += z.Ticks[za0001].Msgsize()
 		}
 	}
+	return
+}
+
+// DecodeMsg implements msgp.Decodable
+func (z *SerFood) DecodeMsg(dc *msgp.Reader) (err error) {
+	var field []byte
+	_ = field
+	var zb0001 uint32
+	zb0001, err = dc.ReadMapHeader()
+	if err != nil {
+		err = msgp.WrapError(err)
+		return
+	}
+	for zb0001 > 0 {
+		zb0001--
+		field, err = dc.ReadMapKeyPtr()
+		if err != nil {
+			err = msgp.WrapError(err)
+			return
+		}
+		switch msgp.UnsafeString(field) {
+		case "FoodCoordX":
+			z.FoodCoordX, err = dc.ReadInt()
+			if err != nil {
+				err = msgp.WrapError(err, "FoodCoordX")
+				return
+			}
+		case "FoodCoordY":
+			z.FoodCoordY, err = dc.ReadInt()
+			if err != nil {
+				err = msgp.WrapError(err, "FoodCoordY")
+				return
+			}
+		default:
+			err = dc.Skip()
+			if err != nil {
+				err = msgp.WrapError(err)
+				return
+			}
+		}
+	}
+	return
+}
+
+// EncodeMsg implements msgp.Encodable
+func (z SerFood) EncodeMsg(en *msgp.Writer) (err error) {
+	// map header, size 2
+	// write "FoodCoordX"
+	err = en.Append(0x82, 0xaa, 0x46, 0x6f, 0x6f, 0x64, 0x43, 0x6f, 0x6f, 0x72, 0x64, 0x58)
+	if err != nil {
+		return
+	}
+	err = en.WriteInt(z.FoodCoordX)
+	if err != nil {
+		err = msgp.WrapError(err, "FoodCoordX")
+		return
+	}
+	// write "FoodCoordY"
+	err = en.Append(0xaa, 0x46, 0x6f, 0x6f, 0x64, 0x43, 0x6f, 0x6f, 0x72, 0x64, 0x59)
+	if err != nil {
+		return
+	}
+	err = en.WriteInt(z.FoodCoordY)
+	if err != nil {
+		err = msgp.WrapError(err, "FoodCoordY")
+		return
+	}
+	return
+}
+
+// MarshalMsg implements msgp.Marshaler
+func (z SerFood) MarshalMsg(b []byte) (o []byte, err error) {
+	o = msgp.Require(b, z.Msgsize())
+	// map header, size 2
+	// string "FoodCoordX"
+	o = append(o, 0x82, 0xaa, 0x46, 0x6f, 0x6f, 0x64, 0x43, 0x6f, 0x6f, 0x72, 0x64, 0x58)
+	o = msgp.AppendInt(o, z.FoodCoordX)
+	// string "FoodCoordY"
+	o = append(o, 0xaa, 0x46, 0x6f, 0x6f, 0x64, 0x43, 0x6f, 0x6f, 0x72, 0x64, 0x59)
+	o = msgp.AppendInt(o, z.FoodCoordY)
+	return
+}
+
+// UnmarshalMsg implements msgp.Unmarshaler
+func (z *SerFood) UnmarshalMsg(bts []byte) (o []byte, err error) {
+	var field []byte
+	_ = field
+	var zb0001 uint32
+	zb0001, bts, err = msgp.ReadMapHeaderBytes(bts)
+	if err != nil {
+		err = msgp.WrapError(err)
+		return
+	}
+	for zb0001 > 0 {
+		zb0001--
+		field, bts, err = msgp.ReadMapKeyZC(bts)
+		if err != nil {
+			err = msgp.WrapError(err)
+			return
+		}
+		switch msgp.UnsafeString(field) {
+		case "FoodCoordX":
+			z.FoodCoordX, bts, err = msgp.ReadIntBytes(bts)
+			if err != nil {
+				err = msgp.WrapError(err, "FoodCoordX")
+				return
+			}
+		case "FoodCoordY":
+			z.FoodCoordY, bts, err = msgp.ReadIntBytes(bts)
+			if err != nil {
+				err = msgp.WrapError(err, "FoodCoordY")
+				return
+			}
+		default:
+			bts, err = msgp.Skip(bts)
+			if err != nil {
+				err = msgp.WrapError(err)
+				return
+			}
+		}
+	}
+	o = bts
+	return
+}
+
+// Msgsize returns an upper bound estimate of the number of bytes occupied by the serialized message
+func (z SerFood) Msgsize() (s int) {
+	s = 1 + 11 + msgp.IntSize + 11 + msgp.IntSize
 	return
 }
 
@@ -857,6 +1061,66 @@ func (z *SerTick) DecodeMsg(dc *msgp.Reader) (err error) {
 					}
 				}
 			}
+		case "Foods":
+			var zb0003 uint32
+			zb0003, err = dc.ReadArrayHeader()
+			if err != nil {
+				err = msgp.WrapError(err, "Foods")
+				return
+			}
+			if cap(z.Foods) >= int(zb0003) {
+				z.Foods = (z.Foods)[:zb0003]
+			} else {
+				z.Foods = make([]*SerFood, zb0003)
+			}
+			for za0002 := range z.Foods {
+				if dc.IsNil() {
+					err = dc.ReadNil()
+					if err != nil {
+						err = msgp.WrapError(err, "Foods", za0002)
+						return
+					}
+					z.Foods[za0002] = nil
+				} else {
+					if z.Foods[za0002] == nil {
+						z.Foods[za0002] = new(SerFood)
+					}
+					var zb0004 uint32
+					zb0004, err = dc.ReadMapHeader()
+					if err != nil {
+						err = msgp.WrapError(err, "Foods", za0002)
+						return
+					}
+					for zb0004 > 0 {
+						zb0004--
+						field, err = dc.ReadMapKeyPtr()
+						if err != nil {
+							err = msgp.WrapError(err, "Foods", za0002)
+							return
+						}
+						switch msgp.UnsafeString(field) {
+						case "FoodCoordX":
+							z.Foods[za0002].FoodCoordX, err = dc.ReadInt()
+							if err != nil {
+								err = msgp.WrapError(err, "Foods", za0002, "FoodCoordX")
+								return
+							}
+						case "FoodCoordY":
+							z.Foods[za0002].FoodCoordY, err = dc.ReadInt()
+							if err != nil {
+								err = msgp.WrapError(err, "Foods", za0002, "FoodCoordY")
+								return
+							}
+						default:
+							err = dc.Skip()
+							if err != nil {
+								err = msgp.WrapError(err, "Foods", za0002)
+								return
+							}
+						}
+					}
+				}
+			}
 		default:
 			err = dc.Skip()
 			if err != nil {
@@ -870,9 +1134,9 @@ func (z *SerTick) DecodeMsg(dc *msgp.Reader) (err error) {
 
 // EncodeMsg implements msgp.Encodable
 func (z *SerTick) EncodeMsg(en *msgp.Writer) (err error) {
-	// map header, size 2
+	// map header, size 3
 	// write "TickIndex"
-	err = en.Append(0x82, 0xa9, 0x54, 0x69, 0x63, 0x6b, 0x49, 0x6e, 0x64, 0x65, 0x78)
+	err = en.Append(0x83, 0xa9, 0x54, 0x69, 0x63, 0x6b, 0x49, 0x6e, 0x64, 0x65, 0x78)
 	if err != nil {
 		return
 	}
@@ -905,15 +1169,55 @@ func (z *SerTick) EncodeMsg(en *msgp.Writer) (err error) {
 			}
 		}
 	}
+	// write "Foods"
+	err = en.Append(0xa5, 0x46, 0x6f, 0x6f, 0x64, 0x73)
+	if err != nil {
+		return
+	}
+	err = en.WriteArrayHeader(uint32(len(z.Foods)))
+	if err != nil {
+		err = msgp.WrapError(err, "Foods")
+		return
+	}
+	for za0002 := range z.Foods {
+		if z.Foods[za0002] == nil {
+			err = en.WriteNil()
+			if err != nil {
+				return
+			}
+		} else {
+			// map header, size 2
+			// write "FoodCoordX"
+			err = en.Append(0x82, 0xaa, 0x46, 0x6f, 0x6f, 0x64, 0x43, 0x6f, 0x6f, 0x72, 0x64, 0x58)
+			if err != nil {
+				return
+			}
+			err = en.WriteInt(z.Foods[za0002].FoodCoordX)
+			if err != nil {
+				err = msgp.WrapError(err, "Foods", za0002, "FoodCoordX")
+				return
+			}
+			// write "FoodCoordY"
+			err = en.Append(0xaa, 0x46, 0x6f, 0x6f, 0x64, 0x43, 0x6f, 0x6f, 0x72, 0x64, 0x59)
+			if err != nil {
+				return
+			}
+			err = en.WriteInt(z.Foods[za0002].FoodCoordY)
+			if err != nil {
+				err = msgp.WrapError(err, "Foods", za0002, "FoodCoordY")
+				return
+			}
+		}
+	}
 	return
 }
 
 // MarshalMsg implements msgp.Marshaler
 func (z *SerTick) MarshalMsg(b []byte) (o []byte, err error) {
 	o = msgp.Require(b, z.Msgsize())
-	// map header, size 2
+	// map header, size 3
 	// string "TickIndex"
-	o = append(o, 0x82, 0xa9, 0x54, 0x69, 0x63, 0x6b, 0x49, 0x6e, 0x64, 0x65, 0x78)
+	o = append(o, 0x83, 0xa9, 0x54, 0x69, 0x63, 0x6b, 0x49, 0x6e, 0x64, 0x65, 0x78)
 	o = msgp.AppendUint64(o, z.TickIndex)
 	// string "Bots"
 	o = append(o, 0xa4, 0x42, 0x6f, 0x74, 0x73)
@@ -927,6 +1231,22 @@ func (z *SerTick) MarshalMsg(b []byte) (o []byte, err error) {
 				err = msgp.WrapError(err, "Bots", za0001)
 				return
 			}
+		}
+	}
+	// string "Foods"
+	o = append(o, 0xa5, 0x46, 0x6f, 0x6f, 0x64, 0x73)
+	o = msgp.AppendArrayHeader(o, uint32(len(z.Foods)))
+	for za0002 := range z.Foods {
+		if z.Foods[za0002] == nil {
+			o = msgp.AppendNil(o)
+		} else {
+			// map header, size 2
+			// string "FoodCoordX"
+			o = append(o, 0x82, 0xaa, 0x46, 0x6f, 0x6f, 0x64, 0x43, 0x6f, 0x6f, 0x72, 0x64, 0x58)
+			o = msgp.AppendInt(o, z.Foods[za0002].FoodCoordX)
+			// string "FoodCoordY"
+			o = append(o, 0xaa, 0x46, 0x6f, 0x6f, 0x64, 0x43, 0x6f, 0x6f, 0x72, 0x64, 0x59)
+			o = msgp.AppendInt(o, z.Foods[za0002].FoodCoordY)
 		}
 	}
 	return
@@ -986,6 +1306,65 @@ func (z *SerTick) UnmarshalMsg(bts []byte) (o []byte, err error) {
 					}
 				}
 			}
+		case "Foods":
+			var zb0003 uint32
+			zb0003, bts, err = msgp.ReadArrayHeaderBytes(bts)
+			if err != nil {
+				err = msgp.WrapError(err, "Foods")
+				return
+			}
+			if cap(z.Foods) >= int(zb0003) {
+				z.Foods = (z.Foods)[:zb0003]
+			} else {
+				z.Foods = make([]*SerFood, zb0003)
+			}
+			for za0002 := range z.Foods {
+				if msgp.IsNil(bts) {
+					bts, err = msgp.ReadNilBytes(bts)
+					if err != nil {
+						return
+					}
+					z.Foods[za0002] = nil
+				} else {
+					if z.Foods[za0002] == nil {
+						z.Foods[za0002] = new(SerFood)
+					}
+					var zb0004 uint32
+					zb0004, bts, err = msgp.ReadMapHeaderBytes(bts)
+					if err != nil {
+						err = msgp.WrapError(err, "Foods", za0002)
+						return
+					}
+					for zb0004 > 0 {
+						zb0004--
+						field, bts, err = msgp.ReadMapKeyZC(bts)
+						if err != nil {
+							err = msgp.WrapError(err, "Foods", za0002)
+							return
+						}
+						switch msgp.UnsafeString(field) {
+						case "FoodCoordX":
+							z.Foods[za0002].FoodCoordX, bts, err = msgp.ReadIntBytes(bts)
+							if err != nil {
+								err = msgp.WrapError(err, "Foods", za0002, "FoodCoordX")
+								return
+							}
+						case "FoodCoordY":
+							z.Foods[za0002].FoodCoordY, bts, err = msgp.ReadIntBytes(bts)
+							if err != nil {
+								err = msgp.WrapError(err, "Foods", za0002, "FoodCoordY")
+								return
+							}
+						default:
+							bts, err = msgp.Skip(bts)
+							if err != nil {
+								err = msgp.WrapError(err, "Foods", za0002)
+								return
+							}
+						}
+					}
+				}
+			}
 		default:
 			bts, err = msgp.Skip(bts)
 			if err != nil {
@@ -1006,6 +1385,14 @@ func (z *SerTick) Msgsize() (s int) {
 			s += msgp.NilSize
 		} else {
 			s += z.Bots[za0001].Msgsize()
+		}
+	}
+	s += 6 + msgp.ArrayHeaderSize
+	for za0002 := range z.Foods {
+		if z.Foods[za0002] == nil {
+			s += msgp.NilSize
+		} else {
+			s += 1 + 11 + msgp.IntSize + 11 + msgp.IntSize
 		}
 	}
 	return

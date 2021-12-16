@@ -40,12 +40,15 @@ func createFolders() {
 }
 
 type SerBot struct {
-	BotIndex  uint64
-	BotCoordX int
-	BotCoordY int
-	BotEnergy int
-	BotGenome []byte
-	BotOrgans []*SerOrgan
+	BotIndex          uint64
+	BotCoordX         int
+	BotCoordY         int
+	BotEnergy         int
+	BotGenome         []byte
+	BotOrgans         []*SerOrgan
+	BotCarnRating     int
+	BotHerbRating     int
+	BotCommandPointer int
 }
 type SerOrgan struct {
 	ParentBotIndex uint64
@@ -56,9 +59,15 @@ type SerOrgan struct {
 	OrganGenome    []byte
 }
 
+type SerFood struct {
+	FoodCoordX int
+	FoodCoordY int
+}
+
 type SerTick struct {
 	TickIndex uint64
 	Bots      []*SerBot
+	Foods     []*SerFood
 }
 type SerChunk struct {
 	ChunkIndex uint
@@ -75,7 +84,7 @@ func (b *SerBot) preprareBot(index uint64, x int, y int) *SerBot {
 	return b
 }
 
-func serializeTick(tickIndex uint64, bots [][]*Bot) {
+func serializeTick(tickIndex uint64, bots [][]*Bot, foods [][]*food) {
 	var tickBots []*SerBot
 	for i := range bots {
 		for j := range bots[i] {
@@ -83,11 +92,14 @@ func serializeTick(tickIndex uint64, bots [][]*Bot) {
 				bot := bots[i][j]
 
 				botToSerz := &SerBot{
-					BotIndex:  bot.index,
-					BotCoordX: bot.coordX,
-					BotCoordY: bot.coordY,
-					BotEnergy: bot.energy,
-					BotGenome: bot.genome}
+					BotIndex:          bot.index,
+					BotCoordX:         bot.coordX,
+					BotCoordY:         bot.coordY,
+					BotEnergy:         bot.energy,
+					BotGenome:         bot.genome,
+					BotCarnRating:     bot.carnivoreRating,
+					BotHerbRating:     bot.herbivoreRating,
+					BotCommandPointer: bot.commandPointer}
 
 				for o := range bots[i][j].organs {
 					if bots[i][j].organs[o] != nil {
@@ -109,23 +121,36 @@ func serializeTick(tickIndex uint64, bots [][]*Bot) {
 			}
 		}
 	}
-	// data, _ := newTick.MarshalMsg(nil)
-	// print(data)
+
+	var tickFoods []*SerFood
+	for i := range foods {
+		for j := range foods[i] {
+			if foods[i][j] != nil {
+				food := foods[i][j]
+
+				foodToSerz := &SerFood{
+					FoodCoordX: food.coord.x,
+					FoodCoordY: food.coord.y}
+
+				tickFoods = append(tickFoods, foodToSerz)
+			}
+		}
+	}
+
 	tickSerz := &SerTick{
 		TickIndex: tickIndex,
 		Bots:      tickBots,
+		Foods:     tickFoods,
 	}
 	currentChunk.Ticks = append(currentChunk.Ticks, tickSerz)
 	if len(currentChunk.Ticks) >= serializeTickCap {
 		serializeChunk(&currentChunk)
 		nextChunkIndex++
+		currentChunk = SerChunk{}
 	}
 }
 
 func serializeChunk(chunk *SerChunk) {
-	// Маршалим чанк
-	// chunkMsg := &ChunkMessage{
-	// 	Ticks: chunk.ticks}
 	chunk.ChunkIndex = uint(nextChunkIndex)
 	chunk.WorldSizeX = uint(worldSizeX)
 	chunk.WorldSizeY = uint(worldSizeY)
@@ -143,68 +168,3 @@ func serializeChunk(chunk *SerChunk) {
 		log.Fatal("write error: ", writeErr)
 	}
 }
-
-// // Protobuf
-// // protoc --proto_path=. --go_out=. data.proto
-
-// // serializeTick Put current tick data into chunk, if chink's size is more than cap, write chunk to file
-// func serializeTick(index uint64, bots [][]*Bot) {
-// 	var b []*BotMessage
-
-// 	for i := range bots {
-// 		for j := range bots[i] {
-// 			if bots[i][j] != nil {
-// 				bot := bots[i][j]
-
-// 				botMsg := &BotMessage{
-// 					Index:  bot.index,
-// 					CoordX: uint32(bot.coordX),
-// 					CoordY: uint32(bot.coordY),
-// 					Energy: uint32(bot.energy),
-// 					Genome: bot.genome}
-
-// 				for o := range bots[i][j].organs {
-// 					if bots[i][j].organs[o] != nil {
-// 						organ := bots[i][j].organs[o]
-
-// 						organMsg := &OrganMessage{
-// 							ParentBotIndex: bot.index,
-// 							OrganIndex:     organ.index,
-// 							CoordX:         uint32(organ.coordX),
-// 							CoordY:         uint32(organ.coordY),
-// 							Genome:         organ.genome}
-// 						botMsg.Organs = append(botMsg.Organs, organMsg)
-// 					}
-// 				}
-// 				b = append(b, botMsg)
-// 			}
-// 		}
-// 	}
-
-// 	tickMsg := &TickMessage{
-// 		TickIndex: index,
-// 		Bots:      b}
-
-// 	currentChunk.Ticks = append(currentChunk.Ticks, tickMsg)
-
-// 	if len(currentChunk.Ticks) >= serializeTickCap {
-// 		serializeChunk(&currentChunk)
-// 		nextChunkIndex++
-// 	}
-// }
-
-// func serializeChunk(chunk *ChunkMessage) {
-// 	// Маршалим чанк
-// 	// chunkMsg := &ChunkMessage{
-// 	// 	Ticks: chunk.ticks}
-// 	chunk.ChunkIndex = uint32(nextChunkIndex)
-// 	chunk.WorldSizeX = uint32(worldSizeX)
-// 	chunk.WorldSizeY = uint32(worldSizeY)
-// 	data, marshErr := proto.Marshal(chunk)
-// 	if marshErr != nil {
-// 		log.Fatal("marshaling error: ", marshErr)
-// 		return
-// 	}
-
-// 	chunk.Ticks = nil
-// }
