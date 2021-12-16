@@ -17,6 +17,29 @@ type Bot struct {
 	doNextMinorCommand     bool
 	minorCommandCount      int
 	majorCommandPointsLeft int
+	age                    int
+	carnivoreRating        int
+	herbivoreRating        int
+}
+
+func (bot *Bot) AddCarnivoreRating(increment int) {
+	bot.carnivoreRating += increment
+	if bot.carnivoreRating > 100 {
+		bot.carnivoreRating = 100
+	}
+	if bot.carnivoreRating < 0 {
+		bot.carnivoreRating = 0
+	}
+}
+
+func (bot *Bot) AddHerbivoreRating(increment int) {
+	bot.herbivoreRating += increment
+	if bot.herbivoreRating > 100 {
+		bot.herbivoreRating = 100
+	}
+	if bot.herbivoreRating < 0 {
+		bot.herbivoreRating = 0
+	}
 }
 
 // SetCommandPointer SET
@@ -69,8 +92,6 @@ func (bot *Bot) InitBot(index uint64, parent *Bot) {
 	}
 
 	if parent != nil {
-		bot.energy = 0
-		bot.AddEnergy(int(float64(parent.energy) * childEnergyFraction))
 		bot.genome = parent.genome
 		var mutate = rand.Float64()
 		if mutate <= mutateChance {
@@ -78,6 +99,7 @@ func (bot *Bot) InitBot(index uint64, parent *Bot) {
 			mutateByte = LoopValue(rand.Intn(botGenomeSize), 0, botGenomeSize)
 			bot.genome[mutateByte] = byte(LoopValue(rand.Intn(botGenomeSize), 0, botGenomeSize))
 		}
+		bot.energy = int(float64(parent.energy) * childEnergyFraction)
 	}
 }
 
@@ -90,14 +112,14 @@ func (bot *Bot) doCommand() {
 		bot.commandLOOKa()
 	case 10:
 		bot.commandMOVEa()
-	// case 15:
-	// 	bot.commandEAT()
+	case 15:
+		bot.commandEAT()
 	case 20:
 		bot.commandPHOTOSYNTESIS()
-	case 25:
-		bot.commandORGAN()
-	// case 30:
-	// 	bot.commandCHILD()
+	// case 25:
+	// 	bot.commandORGAN()
+	case 30:
+		bot.commandCHILD()
 	default:
 		bot.forwardPointer()
 	}
@@ -105,8 +127,19 @@ func (bot *Bot) doCommand() {
 
 // Tick bot logic
 func (bot *Bot) Tick() {
+	if bot.age >= oldAgeDyingCap {
+		botWorld.BotIsDead(bot)
+	} else {
+		bot.age++
+	}
+
 	if bot.isDead {
 		return
+	}
+
+	if botWorld.GetCurrentTickIndex()%4 == 0 {
+		bot.AddCarnivoreRating(-1)
+		bot.AddHerbivoreRating(-1)
 	}
 
 	bot.AddEnergy(-1 * (botEnergyTickCost + len(bot.organs)*botEnergyTickCostPerOrgan))

@@ -105,23 +105,27 @@ func (bot *Bot) commandEAT() {
 		bot.IncrementCommandPointer(2)
 	case "bot":
 		bot.IncrementCommandPointer(3)
+		bot.AddCarnivoreRating(1)
 	case "relative":
 		bot.IncrementCommandPointer(3) // так специально, своих и чужих не различаем
+		bot.AddCarnivoreRating(1)
 	case "food":
 		bot.IncrementCommandPointer(4)
+		bot.AddCarnivoreRating(1)
 	case "self":
 		bot.IncrementCommandPointer(5)
 	default:
 		panic("There must be one of the values above!")
 	}
 	botWorld.BiteObject(coordToBite, bot)
-	// WriteLog(fmt.Sprint("Bot ", bot.index, " bites ", objectOnCoord, " gains energy, " (command [15]commandEAT)"), 4)
+	//WriteLog(fmt.Sprint("Bot ", bot.index, " bites ", objectOnCoord, " gains energy", " (command [15]commandEAT)"), 4)
 	bot.doNextMinorCommand = false
 }
 
 // command 20
 func (bot *Bot) commandPHOTOSYNTESIS() {
 	bot.AddEnergy(photosyntesisEnergyGain)
+	bot.AddHerbivoreRating(1)
 	// WriteLog(fmt.Sprint("Bot ", bot.index, " gain ", photosyntesisEnergyGain, " energy from photosyntesis", " (command [20]commandPHOTOSYNTESIS)"), 4)
 	bot.IncrementCommandPointer(1)
 
@@ -165,7 +169,7 @@ func (bot *Bot) commandCHILD() {
 			direction++
 		} else {
 			botWorld.NewBot(childCoord, bot)
-			bot.energy = int(float64(bot.energy) * childEnergyFraction)
+			bot.energy = bot.energy - int(float64(bot.energy)*childEnergyFraction)
 			// WriteLog(fmt.Sprint("Bot ", bot.index, " create child at ", childCoord, " (command [30]commandCHILD)"), 4)
 			bot.IncrementCommandPointer(2)
 			break

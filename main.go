@@ -20,7 +20,7 @@ func main() {
 
 	// Запуск профайлера ("github.com/pkg/profile")
 	// Для вывода результатов надо в терминале запустить go tool pprof .\cpu.pprof
-	//defer profile.Start(profile.CPUProfile, profile.ProfilePath(".")).Stop()
+	// старый профайлер больше не работает, нужен новый
 
 	state := "Running"
 
@@ -52,6 +52,9 @@ func main() {
 		}
 
 		botWorld.Tick()
+		if aliveBotCount == 0 {
+			break
+		}
 		if debugcheckCollisions == true {
 			collisionDetection()
 		}
@@ -80,6 +83,7 @@ func placeInitialBots(count int) {
 			WriteLog(fmt.Sprint("Placing starting bot at ", newBotCoord), 4)
 		}
 	}
+	aliveBotCount = uint64(count)
 }
 
 // TEST CODE
@@ -95,6 +99,7 @@ func fillEntireWorldWithBots() {
 		j = 0
 		i++
 	}
+	aliveBotCount = uint64(i * j)
 }
 
 // TEST CODE
@@ -111,6 +116,14 @@ func placeTestBots() {
 	botWorld.bots[5][8].genome[0] = 0
 	botWorld.bots[5][8].genome[1] = 0
 	botWorld.bots[5][8].genome[3] = 0
+
+	for i := range botWorld.bots {
+		for j := range botWorld.bots[i] {
+			if botWorld.bots[i][j] != nil {
+				aliveBotCount++
+			}
+		}
+	}
 }
 
 func collisionDetection() {
