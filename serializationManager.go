@@ -26,6 +26,12 @@ func FinalSerialization() {
 }
 
 func createFolders() {
+	if finalOnly {
+		serializationFolderPath = filePath + "/" + "final" + "/"
+		os.RemoveAll(serializationFolderPath)
+		os.MkdirAll(serializationFolderPath, os.ModePerm)
+		return
+	}
 	todayDate := time.Now().Format("2006-01-02")
 	var folderIndex = 0
 
@@ -84,7 +90,7 @@ func (b *SerBot) preprareBot(index uint64, x int, y int) *SerBot {
 	return b
 }
 
-func serializeTick(tickIndex uint64, bots [][]*Bot, foods [][]*food) {
+func serializeTick(tickIndex uint64, bots [][]*Bot, foods [][]*Food) {
 	var tickBots []*SerBot
 	for i := range bots {
 		for j := range bots[i] {

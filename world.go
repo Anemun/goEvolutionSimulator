@@ -4,7 +4,7 @@ package main
 type world struct {
 	bots   [][]*Bot
 	organs [][]*Organ
-	food   [][]*food
+	food   [][]*Food
 }
 
 type coordinates struct {
@@ -15,6 +15,7 @@ type coordinates struct {
 var nextBotIndex uint64
 var thisTickIndex uint64
 var aliveBotCount uint64
+var totalFoodCount uint64
 
 // Call this to init new world
 func (world *world) Init() {
@@ -24,9 +25,9 @@ func (world *world) Init() {
 		world.bots[i] = make([]*Bot, worldSizeY)
 	}
 
-	world.food = make([][]*food, worldSizeX)
+	world.food = make([][]*Food, worldSizeX)
 	for i := 0; i < worldSizeX; i++ {
-		world.food[i] = make([]*food, worldSizeY)
+		world.food[i] = make([]*Food, worldSizeY)
 	}
 
 	world.organs = make([][]*Organ, worldSizeX)
@@ -34,7 +35,7 @@ func (world *world) Init() {
 		world.organs[i] = make([]*Organ, worldSizeY)
 	}
 
-	nextBotIndex = 0
+	nextBotIndex = 1
 	thisTickIndex = 0
 }
 
@@ -50,6 +51,21 @@ func (world *world) Tick() {
 		}
 	}
 	aliveBotCount = uint64(len(botList))
+
+	totalFoodCount = 0
+	for f := range world.food {
+		for m := range world.food[f] {
+			if world.food[f][m] != nil {
+				if world.food[f][m].age >= foodAgeCap {
+					world.food[f][m] = nil
+				} else {
+					world.food[f][m].age++
+					totalFoodCount++
+				}
+			}
+		}
+	}
+
 	for i := range botList {
 		botList[i].Tick()
 	}
@@ -119,7 +135,8 @@ func (world *world) BiteObject(coord coordinates, consumer *Bot) {
 		victim.AddEnergy(-1 * energyAmount)
 		consumer.AddEnergy(energyAmount)
 		if victim.energy <= 0 {
-			world.BotIsDead(victim)
+			// world.BotIsDead(victim)
+			victim.energy = 0
 		}
 		return
 	}
@@ -155,6 +172,9 @@ func (world *world) setBotOnCoord(coord coordinates, bot *Bot) {
 	coord = world.loopCoords(coord)
 	bot.coordX = coord.x
 	bot.coordY = coord.y
+	if world.bots[bot.coordX][bot.coordY] != nil {
+		panic("target coord not empty!")
+	}
 	world.bots[bot.coordX][bot.coordY] = bot
 }
 
@@ -187,12 +207,17 @@ func (world *world) BotIsDead(bot *Bot) {
 	var foodCoord coordinates
 	for i := range bot.organs {
 		world.organs[bot.organs[i].coordX][bot.organs[i].coordY] = nil
-		foodCoord = coordinates{bot.organs[i].coordX, bot.organs[i].coordY}
-		world.food[bot.organs[i].coordX][bot.organs[i].coordY] = &food{foodCoord}
+
+		if createFoodOnBotDeath {
+			foodCoord = coordinates{bot.organs[i].coordX, bot.organs[i].coordY}
+			world.food[bot.organs[i].coordX][bot.organs[i].coordY] = &Food{foodCoord, 0}
+		}
 	}
 
-	foodCoord = coordinates{bot.coordX, bot.coordY}
-	world.food[bot.coordX][bot.coordY] = &food{foodCoord}
+	if createFoodOnBotDeath {
+		foodCoord = coordinates{bot.coordX, bot.coordY}
+		world.food[bot.coordX][bot.coordY] = &Food{foodCoord, 0}
+	}
 }
 
 func (world *world) GetCurrentTickIndex() uint64 {

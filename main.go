@@ -44,11 +44,12 @@ func main() {
 	i := 1
 	for i < maxTickLimit && state == "Running" {
 		if botWorld.GetCurrentTickIndex()%100 == 0 {
+			placeRandomFood(foodGrowCount)
 			elsap := time.Since(globalTimerStart)
 			var tps string // ticks per second
 			tps = fmt.Sprint(math.Ceil((float64(botWorld.GetCurrentTickIndex())/elsap.Seconds())*100) / 100)
 
-			WriteLog(fmt.Sprint("Processing tick #", botWorld.GetCurrentTickIndex(), " out of ", maxTickLimit, " (", tps, " ticks/s)", " Bots alive: ", aliveBotCount), 2)
+			WriteLog(fmt.Sprint("Processing tick #", botWorld.GetCurrentTickIndex(), " out of ", maxTickLimit, " (", tps, " ticks/s)", " Bots alive: ", aliveBotCount, ". Food count: ", totalFoodCount), 2)
 		}
 
 		botWorld.Tick()
@@ -86,6 +87,17 @@ func placeInitialBots(count int) {
 	aliveBotCount = uint64(count)
 }
 
+func placeRandomFood(count int) {
+	i := 0
+	for i < count {
+		var newFood = coordinates{rand.Intn(worldSizeX), rand.Intn(worldSizeY)}
+		if botWorld.WhatIsOnCoord(newFood, nil) == "empty" {
+			i++
+			botWorld.food[newFood.x][newFood.y] = &Food{newFood, 0}
+		}
+	}
+}
+
 // TEST CODE
 func fillEntireWorldWithBots() {
 	i, j := 0, 0
@@ -95,11 +107,12 @@ func fillEntireWorldWithBots() {
 			botWorld.NewBot(newBotCoord, nil)
 			WriteLog(fmt.Sprint("Placing starting bot at ", newBotCoord), 4)
 			j++
+			aliveBotCount++
 		}
 		j = 0
 		i++
+		aliveBotCount++
 	}
-	aliveBotCount = uint64(i * j)
 }
 
 // TEST CODE

@@ -1,5 +1,6 @@
 package main
 
-type food struct {
+type Food struct {
 	coord coordinates
+	age   int
 }

@@ -6,11 +6,11 @@
     "configurations": [
 
         {
-            "name": "Launch file",
+            "name": "Launch main.go",
             "type": "go",
             "request": "launch",
             "mode": "debug",
-            "program": "${workspaceFolder}/main.go"
+            "program": "${workspaceFolder}"
         },
         {
             "name": "Launch",

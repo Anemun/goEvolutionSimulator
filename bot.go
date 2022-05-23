@@ -31,7 +31,6 @@ func (bot *Bot) AddCarnivoreRating(increment int) {
 		bot.carnivoreRating = 0
 	}
 }
-
 func (bot *Bot) AddHerbivoreRating(increment int) {
 	bot.herbivoreRating += increment
 	if bot.herbivoreRating > 100 {
@@ -83,16 +82,17 @@ func (bot *Bot) InitBot(index uint64, parent *Bot) {
 	bot.SetCommandPointer(0)
 	bot.isDead = false
 	bot.index = index
+	bot.genome = make([]byte, botGenomeSize)
 	if parent == nil {
 		bot.energy = botGenomeSize
-		bot.genome = make([]byte, botGenomeSize)
 		for i := range bot.genome {
 			bot.genome[i] = byte(rand.Intn(botGenomeSize))
 		}
 	}
 
 	if parent != nil {
-		bot.genome = parent.genome
+		copy(bot.genome, parent.genome)
+		parent.genome[0] = 99
 		var mutate = rand.Float64()
 		if mutate <= mutateChance {
 			var mutateByte int
@@ -113,7 +113,7 @@ func (bot *Bot) doCommand() {
 	case 10:
 		bot.commandMOVEa()
 	case 15:
-		bot.commandEAT()
+		bot.commandEATa()
 	case 20:
 		bot.commandPHOTOSYNTESIS()
 	// case 25:
@@ -127,8 +127,18 @@ func (bot *Bot) doCommand() {
 
 // Tick bot logic
 func (bot *Bot) Tick() {
+	if botWorld.bots[bot.coordX][bot.coordY] == nil {
+		panic("why bot nil!?")
+	}
+
+	if bot.energy <= 0 {
+		botWorld.BotIsDead(bot)
+		return
+	}
+
 	if bot.age >= oldAgeDyingCap {
 		botWorld.BotIsDead(bot)
+		return
 	} else {
 		bot.age++
 	}
@@ -137,7 +147,7 @@ func (bot *Bot) Tick() {
 		return
 	}
 
-	if botWorld.GetCurrentTickIndex()%4 == 0 {
+	if botWorld.GetCurrentTickIndex()%10 == 0 {
 		bot.AddCarnivoreRating(-1)
 		bot.AddHerbivoreRating(-1)
 	}
@@ -151,28 +161,26 @@ func (bot *Bot) Tick() {
 		bot.organs[i].tick()
 	}
 
-	// Бот имеет несколько больших действий, в каждом есть энное количество маленьких
-	for bot.majorCommandPointsLeft >= majorCommandPointsCostPerAcrion { // пока остались очки на хотя бы одно большое действие
-		for bot.doNextMinorCommand == true &&
-			bot.minorCommandCount < maxMinorCommandsPerMajorCommand { // делать маленькие действия
-			bot.minorCommandCount++
-			bot.doCommand()
-		}
-		bot.majorCommandPointsLeft -= majorCommandPointsCostPerAcrion
-		bot.minorCommandCount = 0
-		bot.doNextMinorCommand = true
-	}
+	bot.doCommand()
+
+	// // Бот имеет несколько больших действий, в каждом есть энное количество маленьких
+	// for bot.majorCommandPointsLeft >= majorCommandPointsCostPerAcrion { // пока остались очки на хотя бы одно большое действие
+	// 	for bot.doNextMinorCommand == true &&
+	// 		bot.minorCommandCount < maxMinorCommandsPerMajorCommand { // делать маленькие действия
+	// 		bot.minorCommandCount++
+	// 		bot.doCommand()
+	// 	}
+	// 	bot.majorCommandPointsLeft -= majorCommandPointsCostPerAcrion
+	// 	bot.minorCommandCount = 0
+	// 	bot.doNextMinorCommand = true
+	// }
 
 	// botWorld.setBotOnCoord(Coord{bot.CoordX + 1, bot.CoordY + 1}, *bot)
 	// WriteLog(fmt.Sprint("Tick ", botWorld.GetCurrentTickIndex(), ": bot ", bot.index, " ", "is on tile ", bot.coordX, ".", bot.coordY, ". Bot energy: ", bot.energy, ". Bot pointer: [", bot.commandPointer, "]: ", bot.genome[bot.commandPointer]), 4)
-
-	if bot.energy <= 0 {
-		botWorld.BotIsDead(bot)
-	}
 }
 
 // Take value from next genome byte and make a direction out of it (default direction count is 8 so value from 0 to 7, where 0 is up, 1 is up-right and 7 is up-left)
-func (bot *Bot) getDirection() int {
+func (bot *Bot) getAbsoluteDirection() int {
 	var direction int
 	cp := LoopValue(bot.CommandPointer()+1, 0, botGenomeSize)
 	direction = int(bot.genome[cp] % directionsCount)

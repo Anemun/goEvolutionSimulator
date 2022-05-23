@@ -10,7 +10,7 @@ func (bot *Bot) commandSTAY() {
 // command 5
 // Look to direction, inrelative to current direction
 func (bot *Bot) commandLOOKa() {
-	var direction = bot.getDirection()
+	var direction = bot.getAbsoluteDirection()
 	var coordToLook = bot.getAdjascentCoordByDirection(direction)
 	var objectOnCoord = botWorld.WhatIsOnCoord(coordToLook, bot)
 	switch objectOnCoord {
@@ -35,7 +35,7 @@ func (bot *Bot) commandLOOKa() {
 // Move to direction, inrelative to current direction
 func (bot *Bot) commandMOVEa() {
 	var allTargetCoordinates []coordinates
-	var direction = bot.getDirection()
+	var direction = bot.getAbsoluteDirection()
 
 	allTargetCoordinates = append(allTargetCoordinates, bot.getAdjascentCoordByDirection(direction))
 	for i := range bot.organs {
@@ -96,8 +96,8 @@ func (bot *Bot) commandMOVEa() {
 }
 
 // command 15
-func (bot *Bot) commandEAT() {
-	var direction = bot.getDirection()
+func (bot *Bot) commandEATa() {
+	var direction = bot.getAbsoluteDirection()
 	var coordToBite = bot.getAdjascentCoordByDirection(direction)
 	var objectOnCoord = botWorld.WhatIsOnCoord(coordToBite, nil)
 	switch objectOnCoord {
